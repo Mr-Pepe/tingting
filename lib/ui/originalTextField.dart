@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/tingtingViewModel.dart';
+import 'package:tingting/viewModels/tingtingViewModel.dart';
 
-class InputTextField extends StatefulWidget {
+class OriginalTextField extends StatefulWidget {
   @override
-  _InputTextFieldState createState() => _InputTextFieldState();
+  _OriginalTextFieldState createState() => _OriginalTextFieldState();
 }
 
-class _InputTextFieldState extends State<InputTextField> {
+class _OriginalTextFieldState extends State<OriginalTextField> {
   TextEditingController _textController;
 
   @override
@@ -30,7 +30,7 @@ class _InputTextFieldState extends State<InputTextField> {
       child: TextField(
         controller: _textController,
         onChanged: (value) {
-          model.selfWrittenText = value;
+          model.originalText = value;
         },
       ),
     );

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/inputTextField.dart';
-import 'package:tingting/originalTextField.dart';
-import 'package:tingting/playerControls.dart';
-import 'package:tingting/tingtingViewModel.dart';
+import 'package:tingting/ui/inputTextField.dart';
+import 'package:tingting/ui/originalTextField.dart';
+import 'package:tingting/ui/playerControls.dart';
+import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class TingTing extends StatefulWidget {
   TingTing({Key key}) : super(key: key);

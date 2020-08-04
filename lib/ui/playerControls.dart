@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/tingtingViewModel.dart';
+import 'package:tingting/viewModels/tingtingViewModel.dart';
 import 'package:tingting/utils.dart';
 import 'package:tingting/values/strings.dart';
 

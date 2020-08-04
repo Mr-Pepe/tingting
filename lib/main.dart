@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/tingting.dart';
-import 'package:tingting/tingtingViewModel.dart';
+import 'package:tingting/ui/tingting.dart';
+import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 void main() {
   runApp(MyApp());

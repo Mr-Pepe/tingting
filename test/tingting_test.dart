@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tingting/tingting.dart';
+import 'package:tingting/ui/tingting.dart';
 import 'package:tingting/values/strings.dart';
 
 void main() {
