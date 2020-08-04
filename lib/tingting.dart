@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/tingtingViewModel.dart';
+import 'package:tingting/utils.dart';
 import 'package:tingting/values/strings.dart';
 
 class TingTing extends StatefulWidget {
@@ -19,70 +20,91 @@ class _TingTingState extends State<TingTing> {
 
     return Container(
       child: Center(
-        child: Column(
-          children: <Widget>[
-            StreamBuilder<Duration>(
-              stream: model.player.durationStream,
-              builder: (context, snapshot) {
-                final duration = snapshot.data ?? Duration.zero;
+        child: StreamBuilder<Duration>(
+          stream: model.player.durationStream,
+          builder: (context, snapshot) {
+            final duration = snapshot.data ?? Duration.zero;
 
-                return StreamBuilder<Duration>(
-                  stream: model.player.getPositionStream(),
-                  builder: (context, snapshot) {
-                    Duration position = snapshot.data ?? Duration.zero;
-                    if (position > duration) {
-                      position = duration;
-                    }
-                    return ProgressBar(
+            return StreamBuilder<Duration>(
+              stream: model.player.getPositionStream(),
+              builder: (context, snapshot) {
+                Duration position = snapshot.data ?? Duration.zero;
+                if (position > duration) {
+                  position = duration;
+                }
+                return Column(
+                  children: <Widget>[
+                    ProgressBar(
                       duration: duration,
                       position: position,
                       onChangeEnd: (newPosition) {
                         model.player.seek(newPosition);
                       },
-                    );
-                  },
-                );
-              },
-            ),
-            StreamBuilder<FullAudioPlaybackState>(
-              stream: model.player.fullPlaybackStateStream,
-              builder: (context, snapshot) {
-                final fullState = snapshot.data;
-                final state = fullState?.state;
-                final buffering = fullState?.buffering;
+                    ),
+                    StreamBuilder<FullAudioPlaybackState>(
+                      stream: model.player.fullPlaybackStateStream,
+                      builder: (context, snapshot) {
+                        final fullState = snapshot.data;
+                        final state = fullState?.state;
+                        final buffering = fullState?.buffering;
 
-                return Row(
-                  children: <Widget>[
-                    RaisedButton(
-                      child: Text(Strings.chooseAudioFile),
-                      onPressed: () async {
-                        final audioFile = await FilePicker.getFile();
-                        if (audioFile != null) {
-                          model.setAudioFile(audioFile);
-                        }
-                      },
-                    ),
-                    RaisedButton(
-                      child: (state != AudioPlaybackState.playing)
-                          ? Text("Play")
-                          : Text("Pause"),
-                      onPressed: () {
-                        (state != AudioPlaybackState.playing)
-                            ? model.player.play()
-                            : model.player.pause();
-                      },
-                    ),
-                    RaisedButton(
-                      child: Text("Stop"),
-                      onPressed: () async {
-                        model.player.stop();
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: <Widget>[
+                              RaisedButton(
+                                child: Text(Strings.chooseAudioFile),
+                                onPressed: () async {
+                                  final audioFile = await FilePicker.getFile();
+                                  if (audioFile != null) {
+                                    model.setAudioFile(audioFile);
+                                  }
+                                },
+                              ),
+                              RaisedButton(
+                                child: (state != AudioPlaybackState.playing)
+                                    ? Text("Play")
+                                    : Text("Pause"),
+                                onPressed: () {
+                                  (state != AudioPlaybackState.playing)
+                                      ? model.player.play()
+                                      : model.player.pause();
+                                },
+                              ),
+                              RaisedButton(
+                                child: Text("Stop"),
+                                onPressed: () {
+                                  model.player.stop();
+                                },
+                              ),
+                              RaisedButton(
+                                child: Text("-5s"),
+                                onPressed: () {
+                                  model.player.seek(clampDuration(
+                                      position - Duration(seconds: 5),
+                                      Duration.zero,
+                                      duration));
+                                },
+                              ),
+                              RaisedButton(
+                                child: Text("+5s"),
+                                onPressed: () {
+                                  model.player.seek(clampDuration(
+                                      position + Duration(seconds: 5),
+                                      Duration.zero,
+                                      duration));
+                                },
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ],
                 );
               },
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
