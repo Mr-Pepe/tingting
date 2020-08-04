@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/inputTextField.dart';
+import 'package:tingting/originalTextField.dart';
 import 'package:tingting/playerControls.dart';
 import 'package:tingting/tingtingViewModel.dart';
 
@@ -53,7 +54,7 @@ class _TingTingState extends State<TingTing>
               children: <Widget>[
                 InputTextField(),
                 Text("2"),
-                Text("3"),
+                OriginalTextField(),
               ],
             ),
           ),
