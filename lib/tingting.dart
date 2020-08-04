@@ -33,20 +33,12 @@ class _TingTingState extends State<TingTing> {
                     if (position > duration) {
                       position = duration;
                     }
-                    return Row(
-                      children: <Widget>[
-                        SeekBar(
-                          duration: duration,
-                          position: position,
-                          onChangeEnd: (newPosition) {
-                            model.player.seek(newPosition);
-                          },
-                        ),
-                        ProgressText(
-                          duration: duration,
-                          position: position,
-                        )
-                      ],
+                    return ProgressBar(
+                      duration: duration,
+                      position: position,
+                      onChangeEnd: (newPosition) {
+                        model.player.seek(newPosition);
+                      },
                     );
                   },
                 );
@@ -81,14 +73,11 @@ class _TingTingState extends State<TingTing> {
                       },
                     ),
                     RaisedButton(
-                        // child: Text("Stop"),
-                        // onPressed: () async {
-                        //   if (playerState != null) {
-                        //     player.stop();
-                        //     player.seek(Duration(microseconds: 0));
-                        //   }
-                        // },
-                        ),
+                      child: Text("Stop"),
+                      onPressed: () async {
+                        model.player.stop();
+                      },
+                    ),
                   ],
                 );
               },
@@ -98,17 +87,58 @@ class _TingTingState extends State<TingTing> {
       ),
     );
   }
+}
 
-  String getProgressText(Duration duration, Duration position) {
-    return duration == Duration.zero
-        ? "--/--"
-        : position.inMinutes.toString() +
-            ":" +
-            (position.inSeconds % 60).toString() +
-            " / " +
-            duration.inMinutes.toString() +
-            ":" +
-            (duration.inSeconds % 60).toString();
+class ProgressBar extends StatefulWidget {
+  final Duration duration;
+  final Duration position;
+  final ValueChanged<Duration> onChanged;
+  final ValueChanged<Duration> onChangeEnd;
+
+  ProgressBar({
+    @required this.duration,
+    @required this.position,
+    this.onChanged,
+    this.onChangeEnd,
+  });
+
+  @override
+  _ProgressBarState createState() => _ProgressBarState();
+}
+
+class _ProgressBarState extends State<ProgressBar> {
+  Duration _dragValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Slider(
+          min: 0.0,
+          max: widget.duration.inMilliseconds.toDouble(),
+          value: _dragValue?.inMilliseconds?.toDouble() ??
+              widget.position.inMilliseconds.toDouble(),
+          onChanged: (value) {
+            setState(() {
+              _dragValue = Duration(milliseconds: value.round());
+            });
+            if (widget.onChanged != null) {
+              widget.onChanged(Duration(milliseconds: value.round()));
+            }
+          },
+          onChangeEnd: (value) {
+            _dragValue = null;
+            if (widget.onChangeEnd != null) {
+              widget.onChangeEnd(Duration(milliseconds: value.round()));
+            }
+          },
+        ),
+        ProgressText(
+          duration: widget.duration,
+          position: _dragValue ?? widget.position,
+        )
+      ],
+    );
   }
 }
 
@@ -129,49 +159,5 @@ class ProgressText extends StatelessWidget {
             ":" +
             (duration.inSeconds % 60).toString();
     return Text(text);
-  }
-}
-
-class SeekBar extends StatefulWidget {
-  final Duration duration;
-  final Duration position;
-  final ValueChanged<Duration> onChanged;
-  final ValueChanged<Duration> onChangeEnd;
-
-  SeekBar({
-    @required this.duration,
-    @required this.position,
-    this.onChanged,
-    this.onChangeEnd,
-  });
-
-  @override
-  _SeekBarState createState() => _SeekBarState();
-}
-
-class _SeekBarState extends State<SeekBar> {
-  double _dragValue;
-
-  @override
-  Widget build(BuildContext context) {
-    return Slider(
-      min: 0.0,
-      max: widget.duration.inMilliseconds.toDouble(),
-      value: _dragValue ?? widget.position.inMilliseconds.toDouble(),
-      onChanged: (value) {
-        setState(() {
-          _dragValue = value;
-        });
-        if (widget.onChanged != null) {
-          widget.onChanged(Duration(milliseconds: value.round()));
-        }
-      },
-      onChangeEnd: (value) {
-        _dragValue = null;
-        if (widget.onChangeEnd != null) {
-          widget.onChangeEnd(Duration(milliseconds: value.round()));
-        }
-      },
-    );
   }
 }
