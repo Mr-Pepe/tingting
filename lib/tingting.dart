@@ -89,6 +89,8 @@ class _TingTingState extends State<TingTing> {
                               RaisedButton(
                                 child: Text("+5s"),
                                 onPressed: () {
+                                  model.player.play();
+                                  model.player.pause();
                                   model.player.seek(clampDuration(
                                       position + Duration(seconds: 5),
                                       Duration.zero,
