@@ -35,11 +35,17 @@ class _TingTingState extends State<TingTing> {
                     }
                     return Row(
                       children: <Widget>[
-                        getProgressSlider(duration, position,
-                            onChanged: (newPosition) {
-                          model.player.seek(newPosition);
-                        }),
-                        Text(getProgressText(duration, position)),
+                        SeekBar(
+                          duration: duration,
+                          position: position,
+                          onChangeEnd: (newPosition) {
+                            model.player.seek(newPosition);
+                          },
+                        ),
+                        ProgressText(
+                          duration: duration,
+                          position: position,
+                        )
                       ],
                     );
                   },
@@ -49,8 +55,10 @@ class _TingTingState extends State<TingTing> {
             StreamBuilder<FullAudioPlaybackState>(
               stream: model.player.fullPlaybackStateStream,
               builder: (context, snapshot) {
-                // final state = fullState?.state;
-                // final buffering = fullState?.buffering;
+                final fullState = snapshot.data;
+                final state = fullState?.state;
+                final buffering = fullState?.buffering;
+
                 return Row(
                   children: <Widget>[
                     RaisedButton(
@@ -63,20 +71,15 @@ class _TingTingState extends State<TingTing> {
                       },
                     ),
                     RaisedButton(
-                        // child: (playerState == null ||
-                        //         playerState != AudioPlayerState.PLAYING)
-                        //     ? Text("Play")
-                        //     : Text("Pause"),
-                        // onPressed: () async {
-                        //   if (playerState != null) {
-                        //     if (playerState != AudioPlayerState.PLAYING) {
-                        //       await player.play(audioFile.path, isLocal: true);
-                        //     } else {
-                        //       await player.pause();
-                        //     }
-                        //   }
-                        // },
-                        ),
+                      child: (state != AudioPlaybackState.playing)
+                          ? Text("Play")
+                          : Text("Pause"),
+                      onPressed: () {
+                        (state != AudioPlaybackState.playing)
+                            ? model.player.play()
+                            : model.player.pause();
+                      },
+                    ),
                     RaisedButton(
                         // child: Text("Stop"),
                         // onPressed: () async {
@@ -96,22 +99,6 @@ class _TingTingState extends State<TingTing> {
     );
   }
 
-  Slider getProgressSlider(Duration duration, Duration position,
-      {Function onChanged}) {
-    return Slider(
-      onChanged: duration == Duration.zero
-          ? null
-          : (v) {
-              if (onChanged != null) {
-                onChanged(Duration(milliseconds: v.round()));
-              }
-            },
-      value: position.inMilliseconds.toDouble(),
-      min: 0,
-      max: position.inMilliseconds.toDouble(),
-    );
-  }
-
   String getProgressText(Duration duration, Duration position) {
     return duration == Duration.zero
         ? "--/--"
@@ -122,5 +109,69 @@ class _TingTingState extends State<TingTing> {
             duration.inMinutes.toString() +
             ":" +
             (duration.inSeconds % 60).toString();
+  }
+}
+
+class ProgressText extends StatelessWidget {
+  final Duration duration;
+  final Duration position;
+  const ProgressText({@required this.duration, @required this.position});
+
+  @override
+  Widget build(BuildContext context) {
+    final text = duration == Duration.zero
+        ? "--/--"
+        : position.inMinutes.toString() +
+            ":" +
+            (position.inSeconds % 60).toString() +
+            " / " +
+            duration.inMinutes.toString() +
+            ":" +
+            (duration.inSeconds % 60).toString();
+    return Text(text);
+  }
+}
+
+class SeekBar extends StatefulWidget {
+  final Duration duration;
+  final Duration position;
+  final ValueChanged<Duration> onChanged;
+  final ValueChanged<Duration> onChangeEnd;
+
+  SeekBar({
+    @required this.duration,
+    @required this.position,
+    this.onChanged,
+    this.onChangeEnd,
+  });
+
+  @override
+  _SeekBarState createState() => _SeekBarState();
+}
+
+class _SeekBarState extends State<SeekBar> {
+  double _dragValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Slider(
+      min: 0.0,
+      max: widget.duration.inMilliseconds.toDouble(),
+      value: _dragValue ?? widget.position.inMilliseconds.toDouble(),
+      onChanged: (value) {
+        setState(() {
+          _dragValue = value;
+        });
+        if (widget.onChanged != null) {
+          widget.onChanged(Duration(milliseconds: value.round()));
+        }
+      },
+      onChangeEnd: (value) {
+        _dragValue = null;
+        if (widget.onChangeEnd != null) {
+          widget.onChangeEnd(Duration(milliseconds: value.round()));
+        }
+      },
+    );
   }
 }
