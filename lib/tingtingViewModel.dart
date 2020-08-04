@@ -15,6 +15,8 @@ class TingTingViewModel extends ChangeNotifier {
 
   AudioPlayer player = AudioPlayer();
 
+  String selfWrittenText = '';
+
   Future<void> setAudioFile(File audioFile) async {
     _audioFile = audioFile;
     await player.setUrl(audioFilePath);
