@@ -1,21 +1,21 @@
+import 'package:characters/characters.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tingting/utils/alignment.dart';
 
 void main() {
   final original = "CCATGAAU";
   final query = "GATTACA";
-
   final aligner = Aligner(
-    original: original,
-    query: query,
+    original: original.characters,
+    query: query.characters,
     matchScore: 1,
     mismatchScore: -1,
     gapScore: -1,
   );
 
   test('Alignment object saves the strings', () {
-    expect(aligner.original, original);
-    expect(aligner.query, query);
+    expect(aligner.original.toString(), original);
+    expect(aligner.query.toString(), query);
   });
 
   test('Score matrix has the correct size', () {
@@ -43,5 +43,24 @@ void main() {
         expect(aligner.scoreMatrix[iLine][iValue], scoreMatrix[iLine][iValue]);
       }
     }
+  });
+
+  test('Best score is correct', () {
+    expect(aligner.maxScore, -1);
+  });
+
+  test('Number of optimal alignments is correct', () {
+    expect(aligner.alignments.length, 2);
+  });
+
+  test('Alignments are correct', () {
+    expect(
+        aligner.alignments.contains(GlobalAlignment(
+            original: 'CCATGA-AU'.characters, query: '-GATTACA-'.characters)),
+        true);
+    expect(
+        aligner.alignments.contains(GlobalAlignment(
+            original: 'CCCATGA-AU'.characters, query: 'G-GATTACA-'.characters)),
+        true);
   });
 }

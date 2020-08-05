@@ -26,6 +26,8 @@ dependencies:
   provider: ^4.3.1
   file_picker: ^1.13.0+1
   just_audio: ^0.2.2
+  characters: ^1.0.0
+  equatable: ^1.2.3
 
 
   # The following adds the Cupertino Icons font to your application.
