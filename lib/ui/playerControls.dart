@@ -72,8 +72,10 @@ class PlayerControls extends StatelessWidget {
                             RaisedButton(
                               child: Text("+5s"),
                               onPressed: () {
-                                model.player.play();
-                                model.player.pause();
+                                if (state == AudioPlaybackState.stopped) {
+                                  model.player.play();
+                                  model.player.pause();
+                                }
                                 model.player.seek(clampDuration(
                                     position + Duration(seconds: 5),
                                     Duration.zero,
