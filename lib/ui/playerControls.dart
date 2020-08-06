@@ -117,32 +117,37 @@ class _ProgressBarState extends State<ProgressBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Slider(
-          min: 0.0,
-          max: widget.duration.inMilliseconds.toDouble(),
-          value: _dragValue?.inMilliseconds?.toDouble() ??
-              widget.position.inMilliseconds.toDouble(),
-          onChanged: (value) {
-            setState(() {
-              _dragValue = Duration(milliseconds: value.round());
-            });
-            if (widget.onChanged != null) {
-              widget.onChanged(Duration(milliseconds: value.round()));
-            }
-          },
-          onChangeEnd: (value) {
-            _dragValue = null;
-            if (widget.onChangeEnd != null) {
-              widget.onChangeEnd(Duration(milliseconds: value.round()));
-            }
-          },
+    return Wrap(
+      direction: Axis.vertical,
+      children: [
+        Row(
+          children: <Widget>[
+            Slider(
+              min: 0.0,
+              max: widget.duration.inMilliseconds.toDouble(),
+              value: _dragValue?.inMilliseconds?.toDouble() ??
+                  widget.position.inMilliseconds.toDouble(),
+              onChanged: (value) {
+                setState(() {
+                  _dragValue = Duration(milliseconds: value.round());
+                });
+                if (widget.onChanged != null) {
+                  widget.onChanged(Duration(milliseconds: value.round()));
+                }
+              },
+              onChangeEnd: (value) {
+                _dragValue = null;
+                if (widget.onChangeEnd != null) {
+                  widget.onChangeEnd(Duration(milliseconds: value.round()));
+                }
+              },
+            ),
+            ProgressText(
+              duration: widget.duration,
+              position: _dragValue ?? widget.position,
+            )
+          ],
         ),
-        ProgressText(
-          duration: widget.duration,
-          position: _dragValue ?? widget.position,
-        )
       ],
     );
   }
