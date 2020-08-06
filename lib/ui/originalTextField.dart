@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class OriginalTextField extends StatefulWidget {
@@ -29,14 +30,19 @@ class _OriginalTextFieldState extends State<OriginalTextField>
 
     final model = Provider.of<TingTingViewModel>(context);
 
-    return Container(
-      child: TextField(
-        controller: _textController,
-        onChanged: (value) {
-          // _textController.text = value;
-          model.originalText = value;
-        },
-        maxLines: null,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(textFieldPadding),
+        child: TextField(
+          decoration: InputDecoration(border: OutlineInputBorder()),
+          controller: _textController,
+          onChanged: (value) {
+            // _textController.text = value;
+            model.originalText = value;
+          },
+          maxLines: null,
+          minLines: 1000,
+        ),
       ),
     );
   }

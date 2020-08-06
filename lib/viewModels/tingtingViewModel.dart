@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:characters/characters.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:tingting/utils/alignment.dart';
 
 class TingTingViewModel extends ChangeNotifier {
   File _audioFile;
@@ -21,5 +23,14 @@ class TingTingViewModel extends ChangeNotifier {
   Future<void> setAudioFile(File audioFile) async {
     _audioFile = audioFile;
     await player.setUrl(audioFilePath);
+  }
+
+  GlobalAlignment getDiff() {
+    final aligner = Aligner(
+        original: originalText.characters,
+        query: selfWrittenText.characters,
+        placeholder: '～');
+
+    return aligner.alignments[0];
   }
 }
