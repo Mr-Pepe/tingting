@@ -34,23 +34,20 @@ class DiffTextField extends StatelessWidget {
           )));
     }
     return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(textFieldPadding),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).primaryColor, width: 2),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 8, vertical: textFieldPadding),
-            child: Text.rich(
-              TextSpan(children: [
-                ...originalTextSpans,
-                TextSpan(text: '\n'),
-                ...queryTextSpans
-              ]),
-            ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: 8, vertical: textFieldPadding),
+          child: Text.rich(
+            TextSpan(children: [
+              ...originalTextSpans,
+              TextSpan(text: '\n'),
+              ...queryTextSpans
+            ]),
           ),
         ),
       ),

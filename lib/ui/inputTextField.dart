@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class InputTextField extends StatefulWidget {
+  final FocusNode focusNode;
+
+  InputTextField({Key key, this.focusNode}) : super(key: key);
+
   @override
   _InputTextFieldState createState() => _InputTextFieldState();
 }
 
-class _InputTextFieldState extends State<InputTextField>
-    with AutomaticKeepAliveClientMixin<InputTextField> {
+class _InputTextFieldState extends State<InputTextField> {
   TextEditingController _textController;
 
   @override
@@ -26,26 +28,21 @@ class _InputTextFieldState extends State<InputTextField>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     final model = Provider.of<TingTingViewModel>(context);
 
+    _textController.text = model.selfWrittenText;
+
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(textFieldPadding),
-        child: TextField(
-          decoration: InputDecoration(border: OutlineInputBorder()),
-          controller: _textController,
-          onChanged: (value) {
-            model.selfWrittenText = value;
-          },
-          maxLines: null,
-          minLines: 1000,
-        ),
+      child: TextField(
+        decoration: InputDecoration(border: OutlineInputBorder()),
+        controller: _textController,
+        onChanged: (value) {
+          model.selfWrittenText = value;
+        },
+        maxLines: null,
+        minLines: 1000,
+        focusNode: widget.focusNode,
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

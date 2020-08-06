@@ -5,6 +5,7 @@ import 'package:tingting/ui/diffTextField.dart';
 import 'package:tingting/ui/inputTextField.dart';
 import 'package:tingting/ui/originalTextField.dart';
 import 'package:tingting/ui/playerControls.dart';
+import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
@@ -17,23 +18,46 @@ class TingTing extends StatefulWidget {
 
 class _TingTingState extends State<TingTing>
     with SingleTickerProviderStateMixin {
-  final List<Tab> tabs = <Tab>[
+  final List<Tab> tabLabels = <Tab>[
     Tab(text: 'Yours'),
     Tab(text: 'Diff'),
     Tab(text: 'Original'),
   ];
+
+  FocusNode inputFocusNode;
+  FocusNode originalFocusNode;
 
   TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: tabs.length);
+    _tabController = TabController(vsync: this, length: tabLabels.length);
+    _tabController.addListener(() {
+      switch (_tabController.index) {
+        case 0:
+          inputFocusNode.requestFocus();
+          break;
+        case 1:
+          inputFocusNode.unfocus();
+          originalFocusNode.unfocus();
+          break;
+        case 2:
+          originalFocusNode.requestFocus();
+          break;
+        default:
+      }
+    });
+
+    inputFocusNode = FocusNode();
+    originalFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    inputFocusNode.dispose();
+    originalFocusNode.dispose();
     super.dispose();
   }
 
@@ -47,18 +71,26 @@ class _TingTingState extends State<TingTing>
         children: <Widget>[
           TabBar(
             controller: _tabController,
-            tabs: tabs,
+            tabs: tabLabels,
             unselectedLabelColor: Colors.black,
             labelColor: Colors.black,
           ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: <Widget>[
-                InputTextField(),
-                DiffTextField(),
-                OriginalTextField(),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(textFieldPadding),
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  InputTextField(
+                    key: Key('inputTextField'),
+                    focusNode: inputFocusNode,
+                  ),
+                  DiffTextField(),
+                  OriginalTextField(
+                      key: Key('originalTextField'),
+                      focusNode: originalFocusNode),
+                ],
+              ),
             ),
           ),
           if (model.player != null)

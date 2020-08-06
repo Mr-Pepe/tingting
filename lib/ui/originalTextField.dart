@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class OriginalTextField extends StatefulWidget {
+  final FocusNode focusNode;
+
+  OriginalTextField({Key key, this.focusNode}) : super(key: key);
+
   @override
   _OriginalTextFieldState createState() => _OriginalTextFieldState();
 }
 
-class _OriginalTextFieldState extends State<OriginalTextField>
-    with AutomaticKeepAliveClientMixin<OriginalTextField> {
+class _OriginalTextFieldState extends State<OriginalTextField> {
   TextEditingController _textController;
 
   @override
@@ -26,27 +28,20 @@ class _OriginalTextFieldState extends State<OriginalTextField>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     final model = Provider.of<TingTingViewModel>(context);
+    _textController.text = model.originalText;
 
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(textFieldPadding),
-        child: TextField(
-          decoration: InputDecoration(border: OutlineInputBorder()),
-          controller: _textController,
-          onChanged: (value) {
-            // _textController.text = value;
-            model.originalText = value;
-          },
-          maxLines: null,
-          minLines: 1000,
-        ),
+      child: TextField(
+        decoration: InputDecoration(border: OutlineInputBorder()),
+        controller: _textController,
+        onChanged: (value) {
+          model.originalText = value;
+        },
+        maxLines: null,
+        minLines: 1000,
+        focusNode: widget.focusNode,
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
