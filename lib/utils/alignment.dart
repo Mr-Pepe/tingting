@@ -28,21 +28,24 @@ class Aligner {
     this.mismatchScore = -1,
     this.gapScore = -1,
   }) {
-    align();
-  }
+    if (original.isEmpty || query.isEmpty) {
+      alignments.add(GlobalAlignment(
+        original: ''.characters,
+        query: ''.characters,
+      ));
+    } else {
+      // Align original and query using Needleman-Wunsch algorithm
+      initializeScoreMatrix();
+      initializeBacktraceMatrix();
 
-  // Align original and query using Needleman-Wunsch algorithm
-  void align() {
-    initializeScoreMatrix();
-    initializeBacktraceMatrix();
+      calculateScores();
 
-    calculateScores();
-
-    backtrace(
-      [query.length, original.length],
-      _backtraceMatrix[query.length][original.length],
-      GlobalAlignment(original: ''.characters, query: ''.characters),
-    );
+      backtrace(
+        [query.length, original.length],
+        _backtraceMatrix[query.length][original.length],
+        GlobalAlignment(original: ''.characters, query: ''.characters),
+      );
+    }
   }
 
   backtrace(
