@@ -7,7 +7,8 @@ class InputTextField extends StatefulWidget {
   _InputTextFieldState createState() => _InputTextFieldState();
 }
 
-class _InputTextFieldState extends State<InputTextField> {
+class _InputTextFieldState extends State<InputTextField>
+    with AutomaticKeepAliveClientMixin<InputTextField> {
   TextEditingController _textController;
 
   @override
@@ -24,6 +25,8 @@ class _InputTextFieldState extends State<InputTextField> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final model = Provider.of<TingTingViewModel>(context);
 
     return Container(
@@ -32,7 +35,11 @@ class _InputTextFieldState extends State<InputTextField> {
         onChanged: (value) {
           model.selfWrittenText = value;
         },
+        maxLines: null,
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
