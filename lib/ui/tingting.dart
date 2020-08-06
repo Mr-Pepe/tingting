@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tingting/ui/diffTextField.dart';
 import 'package:tingting/ui/inputTextField.dart';
 import 'package:tingting/ui/originalTextField.dart';
 import 'package:tingting/ui/playerControls.dart';
@@ -53,7 +54,7 @@ class _TingTingState extends State<TingTing>
               controller: _tabController,
               children: <Widget>[
                 InputTextField(),
-                Text("2"),
+                DiffTextField(),
                 OriginalTextField(),
               ],
             ),
