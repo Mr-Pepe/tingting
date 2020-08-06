@@ -6,8 +6,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/alignment.dart';
 
 class TingTingViewModel extends ChangeNotifier {
-  File _audioFile;
-  get audioFilePath => _audioFile?.path ?? '';
+  String _audioFilePath;
+  get audioFilePath => _audioFilePath;
 
   Duration _playerPosition;
   Duration get playerPosition => _playerPosition;
@@ -15,14 +15,17 @@ class TingTingViewModel extends ChangeNotifier {
   Duration _playerDuration;
   Duration get playerDuration => _playerDuration;
 
-  AudioPlayer player = AudioPlayer();
+  AudioPlayer player;
 
   String selfWrittenText = '';
   String originalText = '';
 
-  Future<void> setAudioFile(File audioFile) async {
-    _audioFile = audioFile;
-    await player.setUrl(audioFilePath);
+  Future<void> setAudioFile(String path) async {
+    _audioFilePath = path;
+    player = AudioPlayer();
+    await player.setUrl(path);
+
+    notifyListeners();
   }
 
   GlobalAlignment getDiff() {

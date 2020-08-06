@@ -45,15 +45,6 @@ class PlayerControls extends StatelessWidget {
                         child: Row(
                           children: <Widget>[
                             RaisedButton(
-                              child: Text(Strings.chooseAudioFile),
-                              onPressed: () async {
-                                final audioFile = await FilePicker.getFile();
-                                if (audioFile != null) {
-                                  model.setAudioFile(audioFile);
-                                }
-                              },
-                            ),
-                            RaisedButton(
                               child: (state != AudioPlaybackState.playing)
                                   ? Text("Play")
                                   : Text("Pause"),
