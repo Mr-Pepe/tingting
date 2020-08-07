@@ -83,4 +83,29 @@ void main() {
       );
     }
   });
+
+  test('Backtrace matrix gets initialized correctly', () {
+    final original = "aaaa";
+    final query = "b";
+
+    final aligner =
+        Aligner(original: original.characters, query: query.characters);
+
+    expect(aligner.backtraceMatrix[0][0].isEmpty, true);
+    expect(
+        aligner.backtraceMatrix[0][1],
+        equals([
+          [0, 0]
+        ]));
+    expect(
+        aligner.backtraceMatrix[0][2],
+        equals([
+          [0, 1]
+        ]));
+    expect(
+        aligner.backtraceMatrix[1][0],
+        equals([
+          [0, 0]
+        ]));
+  });
 }
