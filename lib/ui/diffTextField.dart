@@ -94,6 +94,9 @@ class DiffTextField extends StatelessWidget {
           out.add(Container());
         }
       }
+      for (var iChar = 0; iChar < nCharsPerLine; iChar++) {
+        out.add(Container());
+      }
     }
 
     return out;
