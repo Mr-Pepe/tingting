@@ -21,11 +21,17 @@ class TingTingViewModel extends ChangeNotifier {
   String originalText = '';
 
   Future<void> setAudioFile(String path) async {
-    _audioFilePath = path;
-    player = AudioPlayer();
-    await player.setUrl(path);
+    try {
+      player = AudioPlayer();
+      await player.setUrl(path);
 
-    notifyListeners();
+      _audioFilePath = path;
+      notifyListeners();
+    } catch (e) {
+      player = null;
+      throw Exception(
+          "Could not load $path.\n\nDid you try loading a file with '?' or '#' in its name?");
+    }
   }
 
   GlobalAlignment getDiff() {
