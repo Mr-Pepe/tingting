@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/utils/alignment.dart';
 import 'package:tingting/values/colors.dart';
@@ -41,10 +42,13 @@ class DiffTextField extends StatelessWidget {
                 List<Container> interleavedLines = _interleaveOriginalAndQuery(
                     coloredOriginal, coloredQuery, nCharsPerLine);
 
-                return GridView.count(
+                return StaggeredGridView.countBuilder(
+                  itemCount: interleavedLines.length,
                   crossAxisCount: nCharsPerLine,
                   scrollDirection: Axis.vertical,
-                  children: interleavedLines,
+                  itemBuilder: (context, index) => interleavedLines[index],
+                  staggeredTileBuilder: (index) => StaggeredTile.count(
+                      1, ((index / nCharsPerLine).floor() % 3) == 2 ? 0.5 : 1),
                   crossAxisSpacing: 1,
                   mainAxisSpacing: 1,
                 );
