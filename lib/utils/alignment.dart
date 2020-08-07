@@ -16,6 +16,7 @@ class Aligner {
   List<List<int>> get scoreMatrix => _scoreMatrix;
 
   List<List<List<List<int>>>> _backtraceMatrix;
+  get backtraceMatrix => _backtraceMatrix;
 
   int _maxScore;
   int get maxScore => _maxScore;
@@ -95,11 +96,11 @@ class Aligner {
         (iColumn) {
           if (iRow == 0 && iColumn != 0) {
             return [
-              [iColumn - 1, 0]
+              [0, iColumn - 1]
             ];
           } else if (iColumn == 0 && iRow != 0) {
             return [
-              [iRow - 1, 0]
+              [0, iRow - 1]
             ];
           } else {
             return [];
