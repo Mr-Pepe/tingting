@@ -32,7 +32,7 @@ class TingTingViewModel extends ChangeNotifier {
     final aligner = Aligner(
         original: originalText.characters,
         query: selfWrittenText.characters,
-        placeholder: '～');
+        placeholder: ' ');
 
     return aligner.alignments[0];
   }
