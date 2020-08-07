@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/utils/alignment.dart';
+import 'package:tingting/values/colors.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
@@ -15,8 +16,10 @@ class DiffTextField extends StatelessWidget {
 
     final coloredOriginal = <Container>[];
     final coloredQuery = <Container>[];
+    final textStyle =
+        TextStyle(fontSize: textFieldFontSize, color: generalTextColor);
 
-    colorOriginalAndQuery(alignment, coloredOriginal, coloredQuery);
+    colorOriginalAndQuery(alignment, coloredOriginal, coloredQuery, textStyle);
 
     return Container(
       child: DecoratedBox(
@@ -31,7 +34,7 @@ class DiffTextField extends StatelessWidget {
               builder: (context, constraints) {
                 final boxWidth = constraints.maxWidth;
 
-                final cellSize = _getCellSize(context, constraints);
+                final cellSize = _getCellSize(context, constraints, textStyle);
 
                 final nCharsPerLine = (boxWidth / cellSize).floor().toInt();
 
@@ -52,7 +55,7 @@ class DiffTextField extends StatelessWidget {
   }
 
   void colorOriginalAndQuery(GlobalAlignment alignment,
-      List<Container> original, List<Container> query) {
+      List<Container> original, List<Container> query, TextStyle textStyle) {
     for (var iCharacter = 0;
         iCharacter < alignment.original.length;
         iCharacter++) {
@@ -64,11 +67,17 @@ class DiffTextField extends StatelessWidget {
 
       original.add(
         Container(
-            color: backGroundColor, child: Center(child: Text(originalChar))),
+            color: backGroundColor,
+            child: Center(
+                child: Text(
+              originalChar,
+              style: textStyle,
+            ))),
       );
       query.add(
         Container(
-            color: backGroundColor, child: Center(child: Text(queryChar))),
+            color: backGroundColor,
+            child: Center(child: Text(queryChar, style: textStyle))),
       );
     }
   }
@@ -104,9 +113,10 @@ class DiffTextField extends StatelessWidget {
     return out;
   }
 
-  double _getCellSize(BuildContext context, BoxConstraints constraints) {
-    final richTextWidget =
-        Text.rich(TextSpan(text: '你')).build(context) as RichText;
+  double _getCellSize(
+      BuildContext context, BoxConstraints constraints, TextStyle textStyle) {
+    final richTextWidget = Text.rich(TextSpan(text: '你', style: textStyle))
+        .build(context) as RichText;
     final renderObject = richTextWidget.createRenderObject(context);
 
     renderObject.layout(constraints);
