@@ -1,10 +1,8 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/viewModels/tingtingViewModel.dart';
 import 'package:tingting/utils/utils.dart';
-import 'package:tingting/values/strings.dart';
+import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class PlayerControls extends StatelessWidget {
   @override
@@ -38,7 +36,6 @@ class PlayerControls extends StatelessWidget {
                     builder: (context, snapshot) {
                       final fullState = snapshot.data;
                       final state = fullState?.state;
-                      final buffering = fullState?.buffering;
 
                       return SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
