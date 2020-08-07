@@ -42,6 +42,8 @@ class DiffTextField extends StatelessWidget {
                   crossAxisCount: nCharsPerLine,
                   scrollDirection: Axis.vertical,
                   children: interleavedLines,
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 1,
                 );
               },
             )),
