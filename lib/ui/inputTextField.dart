@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tingting/values/colors.dart';
+import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class InputTextField extends StatefulWidget {
@@ -42,6 +44,10 @@ class _InputTextFieldState extends State<InputTextField> {
         maxLines: null,
         minLines: 1000,
         focusNode: widget.focusNode,
+        style: TextStyle(
+            fontSize: textFieldFontSize,
+            letterSpacing: 3,
+            color: generalTextColor),
       ),
     );
   }
