@@ -1,8 +1,5 @@
-import 'package:characters/characters.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tingting/utils/alignment.dart';
-
-import 'testStrings.dart';
 
 void main() {
   group('Test algorithm', () {
@@ -59,12 +56,7 @@ void main() {
 
     test('Alignment is correct', () {
       expect(aligner.alignment.original.join(), 'CCATGA-AU');
-      expect(aligner.alignment.query.join(), '-GATTACA-');
-      // expect(
-      //     aligner.alignments.contains(GlobalAlignment(
-      //         original: 'CCCATGA-AU'.characters,
-      //         query: 'G-GATTACA-'.characters)),
-      //     true);
+      expect(aligner.alignment.query.join(), 'G-ATTACA-');
     });
   });
 
@@ -86,20 +78,8 @@ void main() {
     final aligner = Aligner(original: original, query: query);
 
     expect(aligner.backtraceMatrix[0][0].isEmpty, true);
-    expect(
-        aligner.backtraceMatrix[0][1],
-        equals([
-          [0, 0]
-        ]));
-    expect(
-        aligner.backtraceMatrix[0][2],
-        equals([
-          [0, 1]
-        ]));
-    expect(
-        aligner.backtraceMatrix[1][0],
-        equals([
-          [0, 0]
-        ]));
+    expect(aligner.backtraceMatrix[0][1], equals([0, 0]));
+    expect(aligner.backtraceMatrix[0][2], equals([0, 1]));
+    expect(aligner.backtraceMatrix[1][0], equals([0, 0]));
   });
 }

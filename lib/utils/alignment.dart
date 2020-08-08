@@ -18,7 +18,7 @@ class Aligner {
   List<List<int>> _scoreMatrix;
   List<List<int>> get scoreMatrix => _scoreMatrix;
 
-  List<List<List<List<int>>>> _backtraceMatrix;
+  List<List<List<int>>> _backtraceMatrix;
   get backtraceMatrix => _backtraceMatrix;
 
   int _maxScore;
@@ -72,13 +72,12 @@ class Aligner {
 
   backtrace() {
     List<int> index = [_query.length, _original.length];
-    List<List<int>> parents = _backtraceMatrix[_query.length][_original.length];
+    List<int> parent = _backtraceMatrix[_query.length][_original.length];
 
     final List<String> alignedOriginal = [];
     final List<String> alignedQuery = [];
 
-    while (parents.isNotEmpty) {
-      final parent = parents[0];
+    while (parent.isNotEmpty) {
       final up = parent[0] == index[0] - 1;
       final left = parent[1] == index[1] - 1;
 
@@ -93,7 +92,7 @@ class Aligner {
         alignedQuery.add(placeholder);
       }
       index = parent;
-      parents = _backtraceMatrix[parent[0]][parent[1]];
+      parent = _backtraceMatrix[parent[0]][parent[1]];
     }
     _alignment = GlobalAlignment(
         original: alignedOriginal.reversed.toList(),
@@ -107,13 +106,9 @@ class Aligner {
         _original.length + 1,
         (iColumn) {
           if (iRow == 0 && iColumn != 0) {
-            return [
-              [0, iColumn - 1]
-            ];
+            return [0, iColumn - 1];
           } else if (iColumn == 0 && iRow != 0) {
-            return [
-              [0, iRow - 1]
-            ];
+            return [0, iRow - 1];
           } else {
             return [];
           }
@@ -144,19 +139,23 @@ class Aligner {
   calculateScores() {
     for (var i = 1; i < _scoreMatrix.length; i++) {
       for (var j = 1; j < _scoreMatrix[0].length; j++) {
+        // The order of entries is important, because only the first candidate
+        // gets used during backtracing.
+        // Putting the diagonal entry to the end, pushes gaps to the end
+        // of the alignment
         final possibleParents = [
-          [i - 1, j - 1],
           [i - 1, j],
           [i, j - 1],
+          [i - 1, j - 1],
         ];
 
         int match =
             (_query[i - 1] == _original[j - 1]) ? matchScore : mismatchScore;
 
         final possibleScores = [
-          _scoreMatrix[i - 1][j - 1] + match,
           _scoreMatrix[i - 1][j] + gapScore,
-          _scoreMatrix[i][j - 1] + gapScore
+          _scoreMatrix[i][j - 1] + gapScore,
+          _scoreMatrix[i - 1][j - 1] + match,
         ];
 
         final maxScore =
@@ -167,7 +166,8 @@ class Aligner {
         // Save where the maximum score came from to allow easier backtracing
         for (var iScore = 0; iScore < possibleScores.length; iScore++) {
           if (possibleScores[iScore] == maxScore) {
-            _backtraceMatrix[i][j].add(possibleParents[iScore]);
+            _backtraceMatrix[i][j] = (possibleParents[iScore]);
+            break;
           }
         }
       }
