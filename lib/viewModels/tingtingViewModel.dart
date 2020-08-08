@@ -36,9 +36,7 @@ class TingTingViewModel extends ChangeNotifier {
 
   GlobalAlignment getDiff() {
     final aligner = Aligner(
-        original: originalText.characters,
-        query: selfWrittenText.characters,
-        placeholder: ' ');
+        original: originalText, query: selfWrittenText, placeholder: ' ');
 
     return aligner.alignments[0];
   }

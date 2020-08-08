@@ -5,8 +5,10 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
 class Aligner {
-  final Characters original;
-  final Characters query;
+  List<String> _original;
+  String get original => _original.join();
+  List<String> _query;
+  String get query => _query.join();
   final String placeholder;
   final int matchScore;
   final int mismatchScore;
@@ -22,30 +24,49 @@ class Aligner {
   int get maxScore => _maxScore;
 
   Aligner({
-    @required this.original,
-    @required this.query,
+    @required String original,
+    @required String query,
     this.placeholder = '-',
     this.matchScore = 1,
     this.mismatchScore = -1,
     this.gapScore = -1,
+    debug = false,
   }) {
-    if (original.isEmpty || query.isEmpty) {
+    _original = original.characters.toList(growable: false);
+    _query = query.characters.toList(growable: false);
+
+    if (_original.isEmpty || _query.isEmpty) {
       alignments.add(GlobalAlignment(
         original: ''.characters,
         query: ''.characters,
       ));
     } else {
-      // Align original and query using Needleman-Wunsch algorithm
+      //Align original and query using Needleman-Wunsch algorithm
+      Stopwatch stopwatch = Stopwatch()..start();
       initializeScoreMatrix();
       initializeBacktraceMatrix();
 
+      if (debug) {
+        print("Initialization took ${stopwatch.elapsedMilliseconds}ms");
+      }
+
+      stopwatch.reset();
       calculateScores();
 
+      if (debug) {
+        print("Calculating scores took ${stopwatch.elapsedMilliseconds}ms");
+      }
+
+      stopwatch.reset();
       backtrace(
-        [query.length, original.length],
-        _backtraceMatrix[query.length][original.length],
+        [_query.length, _original.length],
+        _backtraceMatrix[_query.length][_original.length],
         GlobalAlignment(original: ''.characters, query: ''.characters),
       );
+
+      if (debug) {
+        print("Backtracing took ${stopwatch.elapsedMilliseconds}ms");
+      }
     }
   }
 
@@ -63,19 +84,17 @@ class Aligner {
       for (var parent in parents) {
         if (parent[0] == index[0] - 1 && parent[1] == index[1] - 1) {
           alignmentSoFar = GlobalAlignment(
-              original: alignmentSoFar.original +
-                  original.elementAt(index[1] - 1).characters,
-              query: alignmentSoFar.query +
-                  query.elementAt(index[0] - 1).characters);
+              original:
+                  alignmentSoFar.original + _original[index[1] - 1].characters,
+              query: alignmentSoFar.query + query[index[0] - 1].characters);
         } else if (parent[0] == index[0] - 1) {
           alignmentSoFar = GlobalAlignment(
               original: alignmentSoFar.original + placeholder.characters,
-              query: alignmentSoFar.query +
-                  query.elementAt(index[0] - 1).characters);
+              query: alignmentSoFar.query + _query[index[0] - 1].characters);
         } else if (parent[1] == index[1] - 1) {
           alignmentSoFar = GlobalAlignment(
-              original: alignmentSoFar.original +
-                  original.elementAt(index[1] - 1).characters,
+              original:
+                  alignmentSoFar.original + original[index[1] - 1].characters,
               query: alignmentSoFar.query + placeholder.characters);
         }
 
@@ -90,9 +109,9 @@ class Aligner {
 
   initializeBacktraceMatrix() {
     _backtraceMatrix = List.generate(
-      query.length + 1,
+      _query.length + 1,
       (iRow) => List.generate(
-        original.length + 1,
+        _original.length + 1,
         (iColumn) {
           if (iRow == 0 && iColumn != 0) {
             return [
@@ -113,9 +132,9 @@ class Aligner {
   initializeScoreMatrix() {
     // Initialize first row and first column with gap scores, zero otherwise
     _scoreMatrix = List.generate(
-      query.length + 1,
+      _query.length + 1,
       (iRow) => List.generate(
-        original.length + 1,
+        _original.length + 1,
         (iColumn) {
           if (iRow == 0) {
             return iColumn * gapScore;
@@ -138,9 +157,8 @@ class Aligner {
           [i, j - 1],
         ];
 
-        int match = (query.elementAt(i - 1) == original.elementAt(j - 1))
-            ? matchScore
-            : mismatchScore;
+        int match =
+            (_query[i - 1] == _original[j - 1]) ? matchScore : mismatchScore;
 
         final possibleScores = [
           _scoreMatrix[i - 1][j - 1] + match,
@@ -162,7 +180,7 @@ class Aligner {
       }
     }
 
-    _maxScore = _scoreMatrix[query.length][original.length];
+    _maxScore = _scoreMatrix[_query.length][_original.length];
   }
 }
 

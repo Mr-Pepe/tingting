@@ -2,13 +2,15 @@ import 'package:characters/characters.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tingting/utils/alignment.dart';
 
+import 'testStrings.dart';
+
 void main() {
   group('Test algorithm', () {
     final original = "CCATGAAU";
     final query = "GATTACA";
     final aligner = Aligner(
-      original: original.characters,
-      query: query.characters,
+      original: original,
+      query: query,
       matchScore: 1,
       mismatchScore: -1,
       gapScore: -1,
@@ -73,8 +75,7 @@ void main() {
     final query = ['', 'abc'];
 
     for (var i = 0; i < original.length; i++) {
-      final aligner =
-          Aligner(original: original[i].characters, query: query[i].characters);
+      final aligner = Aligner(original: original[i], query: query[i]);
 
       expect(aligner.alignments.length, 1);
       expect(
@@ -88,8 +89,7 @@ void main() {
     final original = "aaaa";
     final query = "b";
 
-    final aligner =
-        Aligner(original: original.characters, query: query.characters);
+    final aligner = Aligner(original: original, query: query);
 
     expect(aligner.backtraceMatrix[0][0].isEmpty, true);
     expect(
