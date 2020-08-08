@@ -44,10 +44,18 @@ class Aligner {
       //Align original and query using Needleman-Wunsch algorithm
       Stopwatch stopwatch = Stopwatch()..start();
       initializeScoreMatrix();
+
+      if (debug) {
+        print(
+            "Score matrix initialization took ${stopwatch.elapsedMilliseconds}ms");
+      }
+
+      stopwatch.reset();
       initializeBacktraceMatrix();
 
       if (debug) {
-        print("Initialization took ${stopwatch.elapsedMilliseconds}ms");
+        print(
+            "Backtrace matrix initialization took ${stopwatch.elapsedMilliseconds}ms");
       }
 
       stopwatch.reset();
