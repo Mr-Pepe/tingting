@@ -13,7 +13,8 @@ class Aligner {
   final int matchScore;
   final int mismatchScore;
   final int gapScore;
-  final List<GlobalAlignment> alignments = [];
+  GlobalAlignment _alignment;
+  GlobalAlignment get alignment => _alignment;
   List<List<int>> _scoreMatrix;
   List<List<int>> get scoreMatrix => _scoreMatrix;
 
@@ -35,12 +36,7 @@ class Aligner {
     _original = original.characters.toList(growable: false);
     _query = query.characters.toList(growable: false);
 
-    if (_original.isEmpty || _query.isEmpty) {
-      alignments.add(GlobalAlignment(
-        original: ''.characters,
-        query: ''.characters,
-      ));
-    } else {
+    if (_original.isNotEmpty && _query.isNotEmpty) {
       //Align original and query using Needleman-Wunsch algorithm
       Stopwatch stopwatch = Stopwatch()..start();
       initializeScoreMatrix();
@@ -66,11 +62,7 @@ class Aligner {
       }
 
       stopwatch.reset();
-      backtrace(
-        [_query.length, _original.length],
-        _backtraceMatrix[_query.length][_original.length],
-        GlobalAlignment(original: ''.characters, query: ''.characters),
-      );
+      backtrace();
 
       if (debug) {
         print("Backtracing took ${stopwatch.elapsedMilliseconds}ms");
@@ -78,41 +70,34 @@ class Aligner {
     }
   }
 
-  backtrace(
-    List<int> index,
-    List<List<int>> parents,
-    GlobalAlignment alignmentSoFar,
-  ) {
-    // Recursively backtrace through the score matrix
-    if (parents.isEmpty) {
-      alignments.add(GlobalAlignment(
-          original: alignmentSoFar.original.toList().reversed.join().characters,
-          query: alignmentSoFar.query.toList().reversed.join().characters));
-    } else {
-      for (var parent in parents) {
-        if (parent[0] == index[0] - 1 && parent[1] == index[1] - 1) {
-          alignmentSoFar = GlobalAlignment(
-              original:
-                  alignmentSoFar.original + _original[index[1] - 1].characters,
-              query: alignmentSoFar.query + query[index[0] - 1].characters);
-        } else if (parent[0] == index[0] - 1) {
-          alignmentSoFar = GlobalAlignment(
-              original: alignmentSoFar.original + placeholder.characters,
-              query: alignmentSoFar.query + _query[index[0] - 1].characters);
-        } else if (parent[1] == index[1] - 1) {
-          alignmentSoFar = GlobalAlignment(
-              original:
-                  alignmentSoFar.original + original[index[1] - 1].characters,
-              query: alignmentSoFar.query + placeholder.characters);
-        }
+  backtrace() {
+    List<int> index = [_query.length, _original.length];
+    List<List<int>> parents = _backtraceMatrix[_query.length][_original.length];
 
-        backtrace(
-          parent,
-          _backtraceMatrix[parent[0]][parent[1]],
-          alignmentSoFar,
-        );
+    final List<String> alignedOriginal = [];
+    final List<String> alignedQuery = [];
+
+    while (parents.isNotEmpty) {
+      final parent = parents[0];
+      final up = parent[0] == index[0] - 1;
+      final left = parent[1] == index[1] - 1;
+
+      if (up && left) {
+        alignedOriginal.add(_original[index[1] - 1]);
+        alignedQuery.add(_query[index[0] - 1]);
+      } else if (up) {
+        alignedOriginal.add(placeholder);
+        alignedQuery.add(_query[index[0] - 1]);
+      } else if (left) {
+        alignedOriginal.add(_original[index[1] - 1]);
+        alignedQuery.add(placeholder);
       }
+      index = parent;
+      parents = _backtraceMatrix[parent[0]][parent[1]];
     }
+    _alignment = GlobalAlignment(
+        original: alignedOriginal.reversed.toList(),
+        query: alignedQuery.reversed.toList());
   }
 
   initializeBacktraceMatrix() {
@@ -193,8 +178,8 @@ class Aligner {
 }
 
 class GlobalAlignment extends Equatable {
-  final Characters original;
-  final Characters query;
+  final List<String> original;
+  final List<String> query;
 
   GlobalAlignment({@required this.original, @required this.query});
 

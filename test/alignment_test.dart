@@ -53,35 +53,29 @@ void main() {
       expect(aligner.maxScore, -1);
     });
 
-    test('Number of optimal alignments is correct', () {
-      expect(aligner.alignments.length, 2);
+    test('Alignment is non-null', () {
+      expect(aligner.alignment == null, false);
     });
 
-    test('Alignments are correct', () {
-      expect(
-          aligner.alignments.contains(GlobalAlignment(
-              original: 'CCATGA-AU'.characters, query: '-GATTACA-'.characters)),
-          true);
-      expect(
-          aligner.alignments.contains(GlobalAlignment(
-              original: 'CCCATGA-AU'.characters,
-              query: 'G-GATTACA-'.characters)),
-          true);
+    test('Alignment is correct', () {
+      expect(aligner.alignment.original.join(), 'CCATGA-AU');
+      expect(aligner.alignment.query.join(), '-GATTACA-');
+      // expect(
+      //     aligner.alignments.contains(GlobalAlignment(
+      //         original: 'CCCATGA-AU'.characters,
+      //         query: 'G-GATTACA-'.characters)),
+      //     true);
     });
   });
 
-  test('Aligner returns empty alignment if one of the strings is empty', () {
+  test('Aligner returns null if one of the strings is empty', () {
     final original = ['abc', ''];
     final query = ['', 'abc'];
 
     for (var i = 0; i < original.length; i++) {
       final aligner = Aligner(original: original[i], query: query[i]);
 
-      expect(aligner.alignments.length, 1);
-      expect(
-        aligner.alignments[0],
-        GlobalAlignment(original: ''.characters, query: ''.characters),
-      );
+      expect(aligner.alignment, null);
     }
   });
 
