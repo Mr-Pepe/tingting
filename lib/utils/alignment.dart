@@ -5,13 +5,16 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 
 class Aligner {
-  final Characters original;
-  final Characters query;
+  List<String> _original;
+  String get original => _original.join();
+  List<String> _query;
+  String get query => _query.join();
   final String placeholder;
   final int matchScore;
   final int mismatchScore;
   final int gapScore;
-  final List<GlobalAlignment> alignments = [];
+  GlobalAlignment _alignment;
+  GlobalAlignment get alignment => _alignment;
   List<List<int>> _scoreMatrix;
   List<List<int>> get scoreMatrix => _scoreMatrix;
 
@@ -22,77 +25,86 @@ class Aligner {
   int get maxScore => _maxScore;
 
   Aligner({
-    @required this.original,
-    @required this.query,
+    @required String original,
+    @required String query,
     this.placeholder = '-',
     this.matchScore = 1,
     this.mismatchScore = -1,
     this.gapScore = -1,
+    debug = false,
   }) {
-    if (original.isEmpty || query.isEmpty) {
-      alignments.add(GlobalAlignment(
-        original: ''.characters,
-        query: ''.characters,
-      ));
-    } else {
-      // Align original and query using Needleman-Wunsch algorithm
+    _original = original.characters.toList(growable: false);
+    _query = query.characters.toList(growable: false);
+
+    if (_original.isNotEmpty && _query.isNotEmpty) {
+      //Align original and query using Needleman-Wunsch algorithm
+      Stopwatch stopwatch = Stopwatch()..start();
       initializeScoreMatrix();
+
+      if (debug) {
+        print(
+            "Score matrix initialization took ${stopwatch.elapsedMilliseconds}ms");
+      }
+
+      stopwatch.reset();
       initializeBacktraceMatrix();
 
+      if (debug) {
+        print(
+            "Backtrace matrix initialization took ${stopwatch.elapsedMilliseconds}ms");
+      }
+
+      stopwatch.reset();
       calculateScores();
 
-      backtrace(
-        [query.length, original.length],
-        _backtraceMatrix[query.length][original.length],
-        GlobalAlignment(original: ''.characters, query: ''.characters),
-      );
-    }
-  }
+      if (debug) {
+        print("Calculating scores took ${stopwatch.elapsedMilliseconds}ms");
+      }
 
-  backtrace(
-    List<int> index,
-    List<List<int>> parents,
-    GlobalAlignment alignmentSoFar,
-  ) {
-    // Recursively backtrace through the score matrix
-    if (parents.isEmpty) {
-      alignments.add(GlobalAlignment(
-          original: alignmentSoFar.original.toList().reversed.join().characters,
-          query: alignmentSoFar.query.toList().reversed.join().characters));
-    } else {
-      for (var parent in parents) {
-        if (parent[0] == index[0] - 1 && parent[1] == index[1] - 1) {
-          alignmentSoFar = GlobalAlignment(
-              original: alignmentSoFar.original +
-                  original.elementAt(index[1] - 1).characters,
-              query: alignmentSoFar.query +
-                  query.elementAt(index[0] - 1).characters);
-        } else if (parent[0] == index[0] - 1) {
-          alignmentSoFar = GlobalAlignment(
-              original: alignmentSoFar.original + placeholder.characters,
-              query: alignmentSoFar.query +
-                  query.elementAt(index[0] - 1).characters);
-        } else if (parent[1] == index[1] - 1) {
-          alignmentSoFar = GlobalAlignment(
-              original: alignmentSoFar.original +
-                  original.elementAt(index[1] - 1).characters,
-              query: alignmentSoFar.query + placeholder.characters);
-        }
+      stopwatch.reset();
+      backtrace();
 
-        backtrace(
-          parent,
-          _backtraceMatrix[parent[0]][parent[1]],
-          alignmentSoFar,
-        );
+      if (debug) {
+        print("Backtracing took ${stopwatch.elapsedMilliseconds}ms");
       }
     }
   }
 
+  backtrace() {
+    List<int> index = [_query.length, _original.length];
+    List<List<int>> parents = _backtraceMatrix[_query.length][_original.length];
+
+    final List<String> alignedOriginal = [];
+    final List<String> alignedQuery = [];
+
+    while (parents.isNotEmpty) {
+      final parent = parents[0];
+      final up = parent[0] == index[0] - 1;
+      final left = parent[1] == index[1] - 1;
+
+      if (up && left) {
+        alignedOriginal.add(_original[index[1] - 1]);
+        alignedQuery.add(_query[index[0] - 1]);
+      } else if (up) {
+        alignedOriginal.add(placeholder);
+        alignedQuery.add(_query[index[0] - 1]);
+      } else if (left) {
+        alignedOriginal.add(_original[index[1] - 1]);
+        alignedQuery.add(placeholder);
+      }
+      index = parent;
+      parents = _backtraceMatrix[parent[0]][parent[1]];
+    }
+    _alignment = GlobalAlignment(
+        original: alignedOriginal.reversed.toList(),
+        query: alignedQuery.reversed.toList());
+  }
+
   initializeBacktraceMatrix() {
     _backtraceMatrix = List.generate(
-      query.length + 1,
+      _query.length + 1,
       (iRow) => List.generate(
-        original.length + 1,
+        _original.length + 1,
         (iColumn) {
           if (iRow == 0 && iColumn != 0) {
             return [
@@ -113,9 +125,9 @@ class Aligner {
   initializeScoreMatrix() {
     // Initialize first row and first column with gap scores, zero otherwise
     _scoreMatrix = List.generate(
-      query.length + 1,
+      _query.length + 1,
       (iRow) => List.generate(
-        original.length + 1,
+        _original.length + 1,
         (iColumn) {
           if (iRow == 0) {
             return iColumn * gapScore;
@@ -138,9 +150,8 @@ class Aligner {
           [i, j - 1],
         ];
 
-        int match = (query.elementAt(i - 1) == original.elementAt(j - 1))
-            ? matchScore
-            : mismatchScore;
+        int match =
+            (_query[i - 1] == _original[j - 1]) ? matchScore : mismatchScore;
 
         final possibleScores = [
           _scoreMatrix[i - 1][j - 1] + match,
@@ -162,13 +173,13 @@ class Aligner {
       }
     }
 
-    _maxScore = _scoreMatrix[query.length][original.length];
+    _maxScore = _scoreMatrix[_query.length][_original.length];
   }
 }
 
 class GlobalAlignment extends Equatable {
-  final Characters original;
-  final Characters query;
+  final List<String> original;
+  final List<String> query;
 
   GlobalAlignment({@required this.original, @required this.query});
 

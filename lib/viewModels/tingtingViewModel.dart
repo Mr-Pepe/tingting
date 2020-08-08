@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:characters/characters.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/alignment.dart';
@@ -36,10 +33,8 @@ class TingTingViewModel extends ChangeNotifier {
 
   GlobalAlignment getDiff() {
     final aligner = Aligner(
-        original: originalText.characters,
-        query: selfWrittenText.characters,
-        placeholder: ' ');
+        original: originalText, query: selfWrittenText, placeholder: ' ');
 
-    return aligner.alignments[0];
+    return aligner.alignment;
   }
 }
