@@ -144,19 +144,23 @@ class Aligner {
   calculateScores() {
     for (var i = 1; i < _scoreMatrix.length; i++) {
       for (var j = 1; j < _scoreMatrix[0].length; j++) {
+        // The order of entries is important, because only the first candidate
+        // gets used during backtracing.
+        // Putting the diagonal entry to the end, pushes gaps to the end
+        // of the alignment
         final possibleParents = [
-          [i - 1, j - 1],
           [i - 1, j],
           [i, j - 1],
+          [i - 1, j - 1],
         ];
 
         int match =
             (_query[i - 1] == _original[j - 1]) ? matchScore : mismatchScore;
 
         final possibleScores = [
-          _scoreMatrix[i - 1][j - 1] + match,
           _scoreMatrix[i - 1][j] + gapScore,
-          _scoreMatrix[i][j - 1] + gapScore
+          _scoreMatrix[i][j - 1] + gapScore,
+          _scoreMatrix[i - 1][j - 1] + match,
         ];
 
         final maxScore =
