@@ -67,7 +67,8 @@ void main() {
     for (var i = 0; i < original.length; i++) {
       final aligner = Aligner(original: original[i], query: query[i]);
 
-      expect(aligner.alignment, null);
+      expect(aligner.alignment.original.join(), '');
+      expect(aligner.alignment.query.join(), '');
     }
   });
 

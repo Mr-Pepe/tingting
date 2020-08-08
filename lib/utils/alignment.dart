@@ -67,6 +67,8 @@ class Aligner {
       if (debug) {
         print("Backtracing took ${stopwatch.elapsedMilliseconds}ms");
       }
+    } else {
+      _alignment = GlobalAlignment(original: [''], query: ['']);
     }
   }
 
