@@ -29,6 +29,8 @@ class _TingTingState extends State<TingTing>
 
   TabController _tabController;
 
+  TingTingViewModel model;
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +43,7 @@ class _TingTingState extends State<TingTing>
         case 1:
           inputFocusNode.unfocus();
           originalFocusNode.unfocus();
+          model?.getDiff();
           break;
         case 2:
           originalFocusNode.requestFocus();
@@ -63,7 +66,7 @@ class _TingTingState extends State<TingTing>
 
   @override
   Widget build(BuildContext context) {
-    final model = Provider.of<TingTingViewModel>(context);
+    model = Provider.of<TingTingViewModel>(context);
 
     return Container(
       child: Center(

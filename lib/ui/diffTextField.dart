@@ -9,19 +9,49 @@ import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class DiffTextField extends StatelessWidget {
+  final coloredOriginal = <Container>[];
+  final coloredQuery = <Container>[];
+  final textStyle =
+      TextStyle(fontSize: textFieldFontSize, color: generalTextColor);
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<TingTingViewModel>(context);
 
-    final alignment = model.getDiff();
+    return FutureBuilder<GlobalAlignment>(
+        future: model.alignment,
+        builder: (context, alignment) {
+          Widget widget;
+          if (alignment.connectionState == ConnectionState.done) {
+            if (!alignment.hasData ||
+                (alignment.data.original.join() == '' &&
+                    alignment.data.query.join() == '')) {
+              widget = NoComparisonAvailable();
+            } else {
+              colorOriginalAndQuery(
+                  alignment.data, coloredOriginal, coloredQuery, textStyle);
+              widget = _getDiffBox(context);
+            }
+          } else if (alignment.hasError) {
+            widget = Center(
+              child: Text("Oops, something went wrong."),
+            );
+          } else if (alignment.connectionState == ConnectionState.none) {
+            widget = NoComparisonAvailable();
+          } else {
+            widget = Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(),
+                width: 60,
+                height: 60,
+              ),
+            );
+          }
 
-    final coloredOriginal = <Container>[];
-    final coloredQuery = <Container>[];
-    final textStyle =
-        TextStyle(fontSize: textFieldFontSize, color: generalTextColor);
+          return widget;
+        });
+  }
 
-    colorOriginalAndQuery(alignment, coloredOriginal, coloredQuery, textStyle);
-
+  Widget _getDiffBox(BuildContext context) {
     return Container(
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -130,5 +160,21 @@ class DiffTextField extends StatelessWidget {
         .last;
 
     return max(lastBox.bottom - lastBox.top, lastBox.right - lastBox.left);
+  }
+}
+
+class NoComparisonAvailable extends StatelessWidget {
+  const NoComparisonAvailable({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Text(
+          "No comparison available.\nIs there an original and a self-written text?",
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 }

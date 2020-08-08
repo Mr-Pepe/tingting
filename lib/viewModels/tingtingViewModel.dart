@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/alignment.dart';
@@ -17,6 +18,11 @@ class TingTingViewModel extends ChangeNotifier {
   String selfWrittenText = '';
   String originalText = '';
 
+  String lastCheckedSelfWrittenText;
+  String lastCheckedOriginalText;
+
+  Future<GlobalAlignment> alignment;
+
   Future<void> setAudioFile(String path) async {
     try {
       player = AudioPlayer();
@@ -31,10 +37,21 @@ class TingTingViewModel extends ChangeNotifier {
     }
   }
 
-  GlobalAlignment getDiff() {
-    final aligner = Aligner(
-        original: originalText, query: selfWrittenText, placeholder: ' ');
+  getDiff() async {
+    if (lastCheckedOriginalText != originalText ||
+        lastCheckedSelfWrittenText != selfWrittenText) {
+      lastCheckedOriginalText = originalText;
+      lastCheckedSelfWrittenText = selfWrittenText;
 
-    return aligner.alignment;
+      alignment = compute(align, [originalText, selfWrittenText]);
+    }
   }
+}
+
+Future<GlobalAlignment> align(List<String> input) {
+  return Future.value(Aligner(
+    original: input[0],
+    query: input[1],
+    placeholder: ' ',
+  ).alignment);
 }
