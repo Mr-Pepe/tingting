@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/utils/alignment.dart';
+import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/values/colors.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
