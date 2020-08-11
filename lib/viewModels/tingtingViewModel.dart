@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:tingting/utils/alignment.dart';
+import 'package:tingting/utils/aligner.dart';
+import 'package:tingting/utils/globalAlignment.dart';
 
 class TingTingViewModel extends ChangeNotifier {
   String _audioFilePath;

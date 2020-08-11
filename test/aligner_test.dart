@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tingting/utils/alignment.dart';
+import 'package:tingting/utils/aligner.dart';
 
 void main() {
   group('Test algorithm', () {

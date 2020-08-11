@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:characters/characters.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tingting/utils/globalAlignment.dart';
 
 class Aligner {
   List<String> _original;
@@ -177,14 +177,4 @@ class Aligner {
 
     _maxScore = _scoreMatrix[_query.length][_original.length];
   }
-}
-
-class GlobalAlignment extends Equatable {
-  final List<String> original;
-  final List<String> query;
-
-  GlobalAlignment({@required this.original, @required this.query});
-
-  @override
-  List<Object> get props => [original, query];
 }

@@ -3,9 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/utils/alignment.dart';
+import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/values/colors.dart';
 import 'package:tingting/values/dimensions.dart';
+import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class DiffTextField extends StatelessWidget {
@@ -13,6 +14,7 @@ class DiffTextField extends StatelessWidget {
   final coloredQuery = <Container>[];
   final textStyle =
       TextStyle(fontSize: textFieldFontSize, color: generalTextColor);
+
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<TingTingViewModel>(context);
@@ -22,29 +24,18 @@ class DiffTextField extends StatelessWidget {
         builder: (context, alignment) {
           Widget widget;
           if (alignment.connectionState == ConnectionState.done) {
-            if (!alignment.hasData ||
-                (alignment.data.original.join() == '' &&
-                    alignment.data.query.join() == '')) {
-              widget = NoComparisonAvailable();
+            if (!alignment.hasData || alignment.data.isEmpty()) {
+              widget = _noComparisonAvailable();
             } else {
-              colorOriginalAndQuery(
-                  alignment.data, coloredOriginal, coloredQuery, textStyle);
+              _colorOriginalAndQuery(alignment.data);
               widget = _getDiffBox(context);
             }
           } else if (alignment.hasError) {
-            widget = Center(
-              child: Text("Oops, something went wrong."),
-            );
+            widget = _somethingWentWrong();
           } else if (alignment.connectionState == ConnectionState.none) {
-            widget = NoComparisonAvailable();
+            widget = _noComparisonAvailable();
           } else {
-            widget = Center(
-              child: SizedBox(
-                child: CircularProgressIndicator(),
-                width: 60,
-                height: 60,
-              ),
-            );
+            widget = _loadingIndicator();
           }
 
           return widget;
@@ -88,18 +79,18 @@ class DiffTextField extends StatelessWidget {
     );
   }
 
-  void colorOriginalAndQuery(GlobalAlignment alignment,
-      List<Container> original, List<Container> query, TextStyle textStyle) {
+  void _colorOriginalAndQuery(GlobalAlignment alignment) {
     for (var iCharacter = 0;
         iCharacter < alignment.original.length;
         iCharacter++) {
-      final originalChar = alignment.original.elementAt(iCharacter);
-      final queryChar = alignment.query.elementAt(iCharacter);
+      final originalChar = alignment.original[iCharacter];
+      final queryChar = alignment.query[iCharacter];
 
-      final backGroundColor =
-          (originalChar == queryChar) ? Colors.transparent : Colors.red[200];
+      final backGroundColor = (originalChar == queryChar)
+          ? Colors.transparent
+          : wrongCharacterBackgroundcolor;
 
-      original.add(
+      coloredOriginal.add(
         Container(
             color: backGroundColor,
             child: Center(
@@ -108,7 +99,8 @@ class DiffTextField extends StatelessWidget {
               style: textStyle,
             ))),
       );
-      query.add(
+
+      coloredQuery.add(
         Container(
             color: backGroundColor,
             child: Center(child: Text(queryChar, style: textStyle))),
@@ -161,19 +153,28 @@ class DiffTextField extends StatelessWidget {
 
     return max(lastBox.bottom - lastBox.top, lastBox.right - lastBox.left);
   }
-}
 
-class NoComparisonAvailable extends StatelessWidget {
-  const NoComparisonAvailable({Key key}) : super(key: key);
+  Widget _noComparisonAvailable() {
+    return Center(
+      child: Text(
+        Strings.noComparisonAvailable,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text(
-          "No comparison available.\nIs there an original and a self-written text?",
-          textAlign: TextAlign.center,
-        ),
+  Widget _somethingWentWrong() {
+    return Center(
+      child: Text(Strings.oops),
+    );
+  }
+
+  Widget _loadingIndicator() {
+    return Center(
+      child: SizedBox(
+        child: CircularProgressIndicator(),
+        width: 60,
+        height: 60,
       ),
     );
   }
