@@ -96,35 +96,7 @@ class _TingTingState extends State<TingTing>
               ),
             ),
           ),
-          if (model.player != null)
-            PlayerControls()
-          else
-            RaisedButton(
-              child: Text(Strings.chooseAudioFile),
-              onPressed: () async {
-                final audioFile = await FilePicker.getFile();
-                if (audioFile != null) {
-                  model.setAudioFile(audioFile.path).catchError((e) {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text("Error"),
-                          content: Text(e.message),
-                          actions: <Widget>[
-                            FlatButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("Close"))
-                          ],
-                        );
-                      },
-                    );
-                  });
-                }
-              },
-            ),
+          if (model.player != null) PlayerControls()
         ],
       )),
     );
