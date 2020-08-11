@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/tingting.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
@@ -58,29 +62,63 @@ class MyApp extends StatelessWidget {
   _getAudio(BuildContext context, TingTingViewModel model, int mode) async {
     switch (mode) {
       case AudioGenerationMode.fromFile:
-        final audioFile = await FilePicker.getFile();
-        if (audioFile != null) {
-          model.setAudioFile(audioFile.path).catchError((e) {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text("Error"),
-                  content: Text(e.message),
-                  actions: <Widget>[
-                    FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Close"))
-                  ],
-                );
-              },
-            );
-          });
-        }
+        _getAudioFromFile(context, model);
+        break;
+      case AudioGenerationMode.fromText:
+        _getAudioFromText(context, model);
         break;
       default:
     }
+  }
+
+  _getAudioFromFile(BuildContext context, TingTingViewModel model) async {
+    final audioFile = await FilePicker.getFile();
+    if (audioFile != null) {
+      model.setAudioFile(audioFile.path).catchError((e) {
+        _notify(context, Strings.error, e.message);
+      });
+    }
+  }
+
+  _getAudioFromText(BuildContext context, TingTingViewModel model) async {
+    FlutterTts flutterTts = FlutterTts();
+    if (model.originalText.isEmpty) {
+      _notify(context, Strings.error, Strings.cantTtsBecauseOriginalEmpty);
+    } else if (!await flutterTts.isLanguageAvailable("zh-CN")) {
+      _notify(context, Strings.error, Strings.chineseTtsNotAvailable);
+    } else {
+      await flutterTts.setLanguage("zh-CN");
+      final dirPath = (await getExternalStorageDirectory()).path;
+      final filePath = Platform.isAndroid ? "tts.wav" : "tts.caf";
+
+      await flutterTts.synthesizeToFile(model.originalText, filePath);
+
+      sleep(Duration(milliseconds: 200));
+
+      model.setAudioFile(dirPath + '/' + filePath).catchError(
+        (e) {
+          _notify(context, Strings.error, Strings.ttsFailed);
+        },
+      );
+    }
+  }
+
+  _notify(BuildContext context, String heading, String body) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(heading),
+          content: Text(body),
+          actions: <Widget>[
+            FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(Strings.close))
+          ],
+        );
+      },
+    );
   }
 }

@@ -4,6 +4,13 @@ class Strings {
       "No comparison available.\nIs there an original and a self-written text?";
   static final oops = "Oops, something went wrong.";
   static final fromFile = "From file";
-  static final fromText = "From original";
+  static final fromText = "From text";
   static final fromWeb = "From web";
+  static final error = "Error";
+  static final close = "Close";
+  static final cantTtsBecauseOriginalEmpty =
+      "Audio could not be generated from text because the original text field is empty.";
+  static final chineseTtsNotAvailable =
+      "Chinese text-to-speech functionality is not available on your device.";
+  static final ttsFailed = "Text-to-speech generation failed.";
 }
