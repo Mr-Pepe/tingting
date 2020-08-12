@@ -39,58 +39,78 @@ class PlayerControls extends StatelessWidget {
                       final playing = playerState?.playing;
 
                       if (playerState != null) {
-                        return SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: <Widget>[
-                              RaisedButton(
-                                child: (playing) ? Text("Pause") : Text("Play"),
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            IconButton(
+                              iconSize: otherButtonsSize,
+                              icon: Icon(Icons.volume_up),
+                              onPressed: () {
+                                _showSliderDialog(
+                                  context: context,
+                                  title: "Adjust volume",
+                                  divisions: 10,
+                                  min: 0.0,
+                                  max: 1.0,
+                                  stream: model.player.volumeStream,
+                                  onChanged: model.player.setVolume,
+                                );
+                              },
+                            ),
+                            IconButton(
+                              iconSize: otherButtonsSize,
+                              icon: Icon(Icons.replay_5),
+                              onPressed: () {
+                                model.player.seek(clampDuration(
+                                    position - Duration(seconds: 5),
+                                    Duration.zero,
+                                    duration));
+                              },
+                            ),
+                            IconButton(
+                              iconSize: playButtonSize,
+                              icon: playing
+                                  ? Icon(Icons.pause)
+                                  : Icon(Icons.play_arrow),
+                              onPressed: () {
+                                playing
+                                    ? model.player.pause()
+                                    : model.player.play();
+                              },
+                            ),
+                            IconButton(
+                              iconSize: otherButtonsSize,
+                              icon: Icon(Icons.forward_5),
+                              onPressed: () {
+                                model.player.seek(clampDuration(
+                                    position + Duration(seconds: 5),
+                                    Duration.zero,
+                                    duration));
+                              },
+                            ),
+                            StreamBuilder<double>(
+                              stream: model.player.speedStream,
+                              builder: (context, snapshot) => IconButton(
+                                iconSize: otherButtonsSize,
+                                icon: Text(
+                                    "${snapshot.data?.toStringAsFixed(1)}x",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: speedButtonFontSize)),
                                 onPressed: () {
-                                  (playing)
-                                      ? model.player.pause()
-                                      : model.player.play();
+                                  _showSliderDialog(
+                                    context: context,
+                                    title: "Adjust speed",
+                                    divisions: 10,
+                                    min: 0.5,
+                                    max: 1.5,
+                                    stream: model.player.speedStream,
+                                    onChanged: model.player.setSpeed,
+                                  );
                                 },
                               ),
-                              RaisedButton(
-                                child: Text("-5s"),
-                                onPressed: () {
-                                  model.player.seek(clampDuration(
-                                      position - Duration(seconds: 5),
-                                      Duration.zero,
-                                      duration));
-                                },
-                              ),
-                              RaisedButton(
-                                child: Text("+5s"),
-                                onPressed: () {
-                                  model.player.seek(clampDuration(
-                                      position + Duration(seconds: 5),
-                                      Duration.zero,
-                                      duration));
-                                },
-                              ),
-                              StreamBuilder<double>(
-                                stream: model.player.speedStream,
-                                builder: (context, snapshot) => IconButton(
-                                  icon: Text(
-                                      "${snapshot.data?.toStringAsFixed(1)}x",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  onPressed: () {
-                                    _showSliderDialog(
-                                      context: context,
-                                      title: "Adjust speed",
-                                      divisions: 10,
-                                      min: 0.5,
-                                      max: 1.5,
-                                      stream: model.player.speedStream,
-                                      onChanged: model.player.setSpeed,
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         );
                       } else {
                         return Container();
@@ -182,11 +202,10 @@ class _ProgressBarState extends State<ProgressBar> {
             left: 8.0,
             bottom: 0.0,
             child: Text(
-                '- ' +
-                        RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                            .firstMatch("$_remaining")
-                            ?.group(1) ??
-                    '$_remaining',
+                RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+                        .firstMatch("$_position")
+                        ?.group(1) ??
+                    '$_position',
                 style: Theme.of(context).textTheme.caption),
           ),
           Slider(
@@ -224,7 +243,9 @@ class _ProgressBarState extends State<ProgressBar> {
     );
   }
 
-  Duration get _remaining => widget.duration - widget.position;
+  get _position {
+    return _dragValue ?? widget.position;
+  }
 }
 
 class ProgressText extends StatelessWidget {
