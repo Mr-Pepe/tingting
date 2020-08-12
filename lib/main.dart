@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
           builder: (context, model, child) {
             return Scaffold(
                 appBar: AppBar(
-                  title: Text("Ting Ting the Ting Li Trainer"),
+                  title: Text("Ting Ting"),
                   actions: [
                     PopupMenuButton(
                       icon: Icon(Icons.music_note),

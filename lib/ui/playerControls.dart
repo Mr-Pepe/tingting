@@ -192,9 +192,9 @@ class _ProgressBarState extends State<ProgressBar> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         textFieldPadding,
+        4,
+        textFieldPadding,
         0,
-        textFieldPadding,
-        textFieldPadding,
       ),
       child: Stack(
         children: <Widget>[

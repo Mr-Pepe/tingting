@@ -5,6 +5,7 @@ import 'package:tingting/ui/inputTextField.dart';
 import 'package:tingting/ui/originalTextField.dart';
 import 'package:tingting/ui/playerControls.dart';
 import 'package:tingting/values/dimensions.dart';
+import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class TingTing extends StatefulWidget {
@@ -17,9 +18,9 @@ class TingTing extends StatefulWidget {
 class _TingTingState extends State<TingTing>
     with SingleTickerProviderStateMixin {
   final List<Tab> tabLabels = <Tab>[
-    Tab(text: 'Yours'),
-    Tab(text: 'Diff'),
-    Tab(text: 'Original'),
+    Tab(text: Strings.tabYours),
+    Tab(text: Strings.tabDiff),
+    Tab(text: Strings.tabOriginal),
   ];
 
   FocusNode inputFocusNode;
@@ -78,7 +79,12 @@ class _TingTingState extends State<TingTing>
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(textFieldPadding),
+              padding: const EdgeInsets.fromLTRB(
+                textFieldPadding,
+                textFieldPadding,
+                textFieldPadding,
+                0,
+              ),
               child: TabBarView(
                 controller: _tabController,
                 children: [
