@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
+import 'package:tingting/ui/loadingIndicator.dart';
 import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/values/colors.dart';
 import 'package:tingting/values/dimensions.dart';
@@ -35,7 +36,7 @@ class DiffTextField extends StatelessWidget {
           } else if (alignment.connectionState == ConnectionState.none) {
             widget = _noComparisonAvailable();
           } else {
-            widget = _loadingIndicator();
+            widget = loadingIndicator(text: Strings.generatingDiff);
           }
 
           return widget;
@@ -166,16 +167,6 @@ class DiffTextField extends StatelessWidget {
   Widget _somethingWentWrong() {
     return Center(
       child: Text(Strings.oops),
-    );
-  }
-
-  Widget _loadingIndicator() {
-    return Center(
-      child: SizedBox(
-        child: CircularProgressIndicator(),
-        width: 60,
-        height: 60,
-      ),
     );
   }
 }
