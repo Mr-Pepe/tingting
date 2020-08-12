@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/utils/utils.dart';
+import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class PlayerControls extends StatelessWidget {
@@ -168,40 +169,62 @@ class _ProgressBarState extends State<ProgressBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      direction: Axis.vertical,
-      children: [
-        Row(
-          children: <Widget>[
-            Slider(
-              min: 0.0,
-              max: widget.duration.inMilliseconds.toDouble(),
-              value: _dragValue?.inMilliseconds?.toDouble() ??
-                  widget.position.inMilliseconds.toDouble(),
-              onChanged: (value) {
-                setState(() {
-                  _dragValue = Duration(milliseconds: value.round());
-                });
-                if (widget.onChanged != null) {
-                  widget.onChanged(Duration(milliseconds: value.round()));
-                }
-              },
-              onChangeEnd: (value) {
-                _dragValue = null;
-                if (widget.onChangeEnd != null) {
-                  widget.onChangeEnd(Duration(milliseconds: value.round()));
-                }
-              },
-            ),
-            ProgressText(
-              duration: widget.duration,
-              position: _dragValue ?? widget.position,
-            )
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        textFieldPadding,
+        0,
+        textFieldPadding,
+        textFieldPadding,
+      ),
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+            left: 8.0,
+            bottom: 0.0,
+            child: Text(
+                '- ' +
+                        RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+                            .firstMatch("$_remaining")
+                            ?.group(1) ??
+                    '$_remaining',
+                style: Theme.of(context).textTheme.caption),
+          ),
+          Slider(
+            min: 0.0,
+            max: widget.duration.inMilliseconds.toDouble(),
+            value: _dragValue?.inMilliseconds?.toDouble() ??
+                widget.position.inMilliseconds.toDouble(),
+            onChanged: (value) {
+              setState(() {
+                _dragValue = Duration(milliseconds: value.round());
+              });
+              if (widget.onChanged != null) {
+                widget.onChanged(Duration(milliseconds: value.round()));
+              }
+            },
+            onChangeEnd: (value) {
+              _dragValue = null;
+              if (widget.onChangeEnd != null) {
+                widget.onChangeEnd(Duration(milliseconds: value.round()));
+              }
+            },
+          ),
+          Positioned(
+            right: 16.0,
+            bottom: 0.0,
+            child: Text(
+                RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
+                        .firstMatch("${widget.duration}")
+                        ?.group(1) ??
+                    '${widget.duration}',
+                style: Theme.of(context).textTheme.caption),
+          ),
+        ],
+      ),
     );
   }
+
+  Duration get _remaining => widget.duration - widget.position;
 }
 
 class ProgressText extends StatelessWidget {
