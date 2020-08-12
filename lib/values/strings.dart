@@ -13,4 +13,6 @@ class Strings {
   static final chineseTtsNotAvailable =
       "Chinese text-to-speech functionality is not available on your device.";
   static final ttsFailed = "Text-to-speech generation failed.";
+  static final generatingAudio = "Generating audio ...";
+  static final generatingDiff = "Generating diff ...";
 }
