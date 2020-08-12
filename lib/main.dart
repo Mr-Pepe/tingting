@@ -81,26 +81,43 @@ class MyApp extends StatelessWidget {
   }
 
   _getAudioFromText(BuildContext context, TingTingViewModel model) async {
-    FlutterTts flutterTts = FlutterTts();
     if (model.originalText.isEmpty) {
       _notify(context, Strings.error, Strings.cantTtsBecauseOriginalEmpty);
-    } else if (!await flutterTts.isLanguageAvailable("zh-CN")) {
-      _notify(context, Strings.error, Strings.chineseTtsNotAvailable);
     } else {
-      await flutterTts.setLanguage("zh-CN");
       final dirPath = (await getExternalStorageDirectory()).path;
       final filePath = Platform.isAndroid ? "tts.wav" : "tts.caf";
 
-      await flutterTts.synthesizeToFile(model.originalText, filePath);
+      await _generateSpeechFromText(context, model, filePath);
 
-      sleep(Duration(milliseconds: 200));
+      Stopwatch timer = Stopwatch();
+      bool success = false;
 
-      model.setAudioFile(dirPath + '/' + filePath).catchError(
-        (e) {
-          _notify(context, Strings.error, Strings.ttsFailed);
-        },
-      );
+      while (timer.elapsedMilliseconds < 10000 && !success) {
+        await model.setAudioFile(dirPath + '/' + filePath).then((_) {
+          success = true;
+        }).catchError((e) {
+          success = false;
+        });
+      }
     }
+  }
+
+  Future<bool> _generateSpeechFromText(
+    BuildContext context,
+    TingTingViewModel model,
+    String filePath,
+  ) async {
+    FlutterTts flutterTts = FlutterTts();
+
+    if (!await flutterTts.isLanguageAvailable("zh-CN")) {
+      _notify(context, Strings.error, Strings.chineseTtsNotAvailable);
+    } else {
+      await flutterTts.setLanguage("zh-CN");
+
+      await flutterTts.synthesizeToFile(model.originalText, filePath);
+    }
+
+    return true;
   }
 
   _notify(BuildContext context, String heading, String body) {
