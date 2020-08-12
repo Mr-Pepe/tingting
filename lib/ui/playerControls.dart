@@ -37,39 +37,63 @@ class PlayerControls extends StatelessWidget {
                       final playerState = snapshot.data;
                       final playing = playerState?.playing;
 
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: <Widget>[
-                            RaisedButton(
-                              child: (playing) ? Text("Pause") : Text("Play"),
-                              onPressed: () {
-                                (playing)
-                                    ? model.player.pause()
-                                    : model.player.play();
-                              },
-                            ),
-                            RaisedButton(
-                              child: Text("-5s"),
-                              onPressed: () {
-                                model.player.seek(clampDuration(
-                                    position - Duration(seconds: 5),
-                                    Duration.zero,
-                                    duration));
-                              },
-                            ),
-                            RaisedButton(
-                              child: Text("+5s"),
-                              onPressed: () {
-                                model.player.seek(clampDuration(
-                                    position + Duration(seconds: 5),
-                                    Duration.zero,
-                                    duration));
-                              },
-                            ),
-                          ],
-                        ),
-                      );
+                      if (playerState != null) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: <Widget>[
+                              RaisedButton(
+                                child: (playing) ? Text("Pause") : Text("Play"),
+                                onPressed: () {
+                                  (playing)
+                                      ? model.player.pause()
+                                      : model.player.play();
+                                },
+                              ),
+                              RaisedButton(
+                                child: Text("-5s"),
+                                onPressed: () {
+                                  model.player.seek(clampDuration(
+                                      position - Duration(seconds: 5),
+                                      Duration.zero,
+                                      duration));
+                                },
+                              ),
+                              RaisedButton(
+                                child: Text("+5s"),
+                                onPressed: () {
+                                  model.player.seek(clampDuration(
+                                      position + Duration(seconds: 5),
+                                      Duration.zero,
+                                      duration));
+                                },
+                              ),
+                              StreamBuilder<double>(
+                                stream: model.player.speedStream,
+                                builder: (context, snapshot) => IconButton(
+                                  icon: Text(
+                                      "${snapshot.data?.toStringAsFixed(1)}x",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  onPressed: () {
+                                    _showSliderDialog(
+                                      context: context,
+                                      title: "Adjust speed",
+                                      divisions: 10,
+                                      min: 0.5,
+                                      max: 1.5,
+                                      stream: model.player.speedStream,
+                                      onChanged: model.player.setSpeed,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
                     },
                   ),
                 ],
@@ -80,6 +104,46 @@ class PlayerControls extends StatelessWidget {
       ),
     );
   }
+}
+
+_showSliderDialog({
+  BuildContext context,
+  String title,
+  int divisions,
+  double min,
+  double max,
+  String valueSuffix = '',
+  Stream<double> stream,
+  ValueChanged<double> onChanged,
+}) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title, textAlign: TextAlign.center),
+      content: StreamBuilder<double>(
+        stream: stream,
+        builder: (context, snapshot) => Container(
+          height: 100.0,
+          child: Column(
+            children: [
+              Text('${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
+                  style: TextStyle(
+                      fontFamily: 'Fixed',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24.0)),
+              Slider(
+                divisions: divisions,
+                min: min,
+                max: max,
+                value: snapshot.data ?? 1.0,
+                onChanged: onChanged,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class ProgressBar extends StatefulWidget {
