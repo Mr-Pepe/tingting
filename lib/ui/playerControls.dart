@@ -37,6 +37,7 @@ class PlayerControls extends StatelessWidget {
                     builder: (context, snapshot) {
                       final playerState = snapshot.data;
                       final playing = playerState?.playing;
+                      final processingState = playerState?.processingState;
 
                       if (playerState != null) {
                         return Row(
@@ -69,14 +70,10 @@ class PlayerControls extends StatelessWidget {
                             ),
                             IconButton(
                               iconSize: playButtonSize,
-                              icon: playing
-                                  ? Icon(Icons.pause)
-                                  : Icon(Icons.play_arrow),
-                              onPressed: () {
-                                playing
-                                    ? model.player.pause()
-                                    : model.player.play();
-                              },
+                              icon: _getCenterButtonIcon(
+                                  processingState, playing),
+                              onPressed: () => _centerButtonCallback(
+                                  processingState, playing, model),
                             ),
                             IconButton(
                               iconSize: otherButtonsSize,
@@ -124,6 +121,30 @@ class PlayerControls extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+Icon _getCenterButtonIcon(ProcessingState processingState, bool playing) {
+  IconData centerButtonIcon;
+  if (playing != true) {
+    centerButtonIcon = Icons.play_arrow;
+  } else if (processingState != ProcessingState.completed) {
+    centerButtonIcon = Icons.pause;
+  } else {
+    centerButtonIcon = Icons.replay;
+  }
+
+  return Icon(centerButtonIcon);
+}
+
+_centerButtonCallback(
+    ProcessingState processingState, bool playing, TingTingViewModel model) {
+  if (playing != true) {
+    model.player.play();
+  } else if (processingState != ProcessingState.completed) {
+    model.player.pause();
+  } else {
+    model.player.seek(Duration.zero);
   }
 }
 

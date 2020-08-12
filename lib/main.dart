@@ -159,10 +159,12 @@ Future<bool> generateSpeechFromText(
 ) async {
   FlutterTts flutterTts = FlutterTts();
 
-  if (!await flutterTts.isLanguageAvailable("zh-CN")) {
+  final language = "zh-CN";
+
+  if (!await flutterTts.isLanguageAvailable(language)) {
     notify(context, Strings.error, Strings.chineseTtsNotAvailable);
   } else {
-    await flutterTts.setLanguage("zh-CN");
+    await flutterTts.setLanguage(language);
 
     await flutterTts.synthesizeToFile(model.originalText, filePath);
   }
