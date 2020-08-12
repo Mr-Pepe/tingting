@@ -15,4 +15,5 @@ class Strings {
   static final ttsFailed = "Text-to-speech generation failed.";
   static final generatingAudio = "Generating audio ...";
   static final generatingDiff = "Generating diff ...";
+  static final loadingAudioFromFile = "Loading audio from file ...";
 }

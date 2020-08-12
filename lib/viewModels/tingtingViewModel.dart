@@ -23,14 +23,16 @@ class TingTingViewModel extends ChangeNotifier {
   String lastCheckedOriginalText;
 
   Future<GlobalAlignment> alignment;
+  Future<bool> gettingAudio;
 
-  Future<void> setAudioFile(String path) async {
+  Future<bool> setAudioFile(String path) async {
     try {
       player = AudioPlayer();
       await player.setUrl(path);
 
       _audioFilePath = path;
       notifyListeners();
+      return true;
     } catch (e) {
       player = null;
       throw Exception(
