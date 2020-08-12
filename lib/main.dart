@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:tingting/ui/notify.dart';
 import 'package:tingting/ui/tingting.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
 import 'package:tingting/values/strings.dart';
@@ -75,14 +76,14 @@ class MyApp extends StatelessWidget {
     final audioFile = await FilePicker.getFile();
     if (audioFile != null) {
       model.setAudioFile(audioFile.path).catchError((e) {
-        _notify(context, Strings.error, e.message);
+        notify(context, Strings.error, e.message);
       });
     }
   }
 
   _getAudioFromText(BuildContext context, TingTingViewModel model) async {
     if (model.originalText.isEmpty) {
-      _notify(context, Strings.error, Strings.cantTtsBecauseOriginalEmpty);
+      notify(context, Strings.error, Strings.cantTtsBecauseOriginalEmpty);
     } else {
       final dirPath = (await getExternalStorageDirectory()).path;
       final filePath = Platform.isAndroid ? "tts.wav" : "tts.caf";
@@ -110,7 +111,7 @@ class MyApp extends StatelessWidget {
     FlutterTts flutterTts = FlutterTts();
 
     if (!await flutterTts.isLanguageAvailable("zh-CN")) {
-      _notify(context, Strings.error, Strings.chineseTtsNotAvailable);
+      notify(context, Strings.error, Strings.chineseTtsNotAvailable);
     } else {
       await flutterTts.setLanguage("zh-CN");
 
@@ -118,24 +119,5 @@ class MyApp extends StatelessWidget {
     }
 
     return true;
-  }
-
-  _notify(BuildContext context, String heading, String body) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(heading),
-          content: Text(body),
-          actions: <Widget>[
-            FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(Strings.close))
-          ],
-        );
-      },
-    );
   }
 }
