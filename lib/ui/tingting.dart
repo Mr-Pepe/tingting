@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tingting/ui/diffTextField.dart';
 import 'package:tingting/ui/inputTextField.dart';
 import 'package:tingting/ui/originalTextField.dart';
-import 'package:tingting/ui/playerControls.dart';
+import 'package:tingting/ui/audioControls.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
@@ -100,9 +100,16 @@ class _TingTingState extends State<TingTing>
               ),
             ),
           ),
-          if (model.player != null) PlayerControls()
+          if (model.player != null) _audioControls()
         ],
       )),
+    );
+  }
+
+  _audioControls() {
+    return Provider.value(
+      value: model.player,
+      child: AudioControls(),
     );
   }
 }
