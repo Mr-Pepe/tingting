@@ -84,6 +84,7 @@ class AudioControls extends StatelessWidget {
                         StreamBuilder<double>(
                           stream: player.speedStream,
                           builder: (context, snapshot) => IconButton(
+                            key: Key('adjust speed button'),
                             iconSize: otherButtonsSize,
                             icon: Text("${snapshot.data?.toStringAsFixed(1)}x",
                                 style: TextStyle(
@@ -119,12 +120,12 @@ class AudioControls extends StatelessWidget {
 
 Icon _getCenterButtonIcon(ProcessingState processingState, bool playing) {
   IconData centerButtonIcon;
-  if (playing != true) {
-    centerButtonIcon = Icons.play_arrow;
-  } else if (processingState != ProcessingState.completed) {
+  if (processingState == ProcessingState.completed) {
+    centerButtonIcon = Icons.replay;
+  } else if (playing == true) {
     centerButtonIcon = Icons.pause;
   } else {
-    centerButtonIcon = Icons.replay;
+    centerButtonIcon = Icons.play_arrow;
   }
 
   return Icon(centerButtonIcon);
