@@ -5,6 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/loadingIndicator.dart';
 import 'package:tingting/utils/globalAlignment.dart';
+import 'package:tingting/utils/interleaveOriginalAndQuery.dart';
 import 'package:tingting/values/colors.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/values/strings.dart';
@@ -29,7 +30,7 @@ class DiffTextField extends StatelessWidget {
               widget = _noComparisonAvailable();
             } else {
               _colorOriginalAndQuery(alignment.data);
-              widget = _getDiffBox(context);
+              widget = _getDiffBox(context, alignment.data.original);
             }
           } else if (alignment.hasError) {
             widget = _somethingWentWrong();
@@ -43,7 +44,7 @@ class DiffTextField extends StatelessWidget {
         });
   }
 
-  Widget _getDiffBox(BuildContext context) {
+  Widget _getDiffBox(BuildContext context, List<String> original) {
     return Container(
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -61,7 +62,7 @@ class DiffTextField extends StatelessWidget {
 
                 final nCharsPerLine = (boxWidth / cellSize).floor().toInt();
 
-                List<Container> interleavedLines = _interleaveOriginalAndQuery(
+                List<Container> interleavedLines = interleaveOriginalAndQuery(
                     coloredOriginal, coloredQuery, nCharsPerLine);
 
                 return StaggeredGridView.countBuilder(
@@ -113,37 +114,6 @@ class DiffTextField extends StatelessWidget {
             child: Center(child: Text(queryChar, style: textStyle))),
       );
     }
-  }
-
-  List<Container> _interleaveOriginalAndQuery(List<Container> originalTextSpans,
-      List<Container> queryTextSpans, int nCharsPerLine) {
-    final nLines = (originalTextSpans.length / nCharsPerLine).ceil().toInt();
-
-    final out = <Container>[];
-
-    for (var iLine = 0; iLine < nLines; iLine++) {
-      for (var iChar = 0; iChar < nCharsPerLine; iChar++) {
-        final index = iLine * nCharsPerLine + iChar;
-        if (index < originalTextSpans.length) {
-          out.add(originalTextSpans[index]);
-        } else {
-          out.add(Container());
-        }
-      }
-      for (var iChar = 0; iChar < nCharsPerLine; iChar++) {
-        final index = iLine * nCharsPerLine + iChar;
-        if (index < queryTextSpans.length) {
-          out.add(queryTextSpans[index]);
-        } else {
-          out.add(Container());
-        }
-      }
-      for (var iChar = 0; iChar < nCharsPerLine; iChar++) {
-        out.add(Container());
-      }
-    }
-
-    return out;
   }
 
   double _getCellSize(
