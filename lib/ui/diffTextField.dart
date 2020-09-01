@@ -87,9 +87,15 @@ class DiffTextField extends StatelessWidget {
       final originalChar = alignment.original[iCharacter];
       final queryChar = alignment.query[iCharacter];
 
-      final backGroundColor = (originalChar == queryChar)
-          ? Colors.transparent
-          : wrongCharacterBackgroundcolor;
+      var backGroundColor = Colors.transparent;
+
+      final punctuation = ['.', '，', '。', '\n', '、'];
+
+      if (!punctuation.contains(originalChar) &&
+          !punctuation.contains(queryChar) &&
+          (originalChar != queryChar)) {
+        backGroundColor = wrongCharacterBackgroundcolor;
+      }
 
       coloredOriginal.add(
         Container(
