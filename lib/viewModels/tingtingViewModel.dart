@@ -45,7 +45,7 @@ class TingTingViewModel extends ChangeNotifier {
         player = AudioPlayer();
       }
       player.stop();
-      await player.setUrl(path);
+      await player.setFilePath(path);
 
       _audioFilePath = path;
       _saveState.setAudioPath(path);
