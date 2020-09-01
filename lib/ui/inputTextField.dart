@@ -32,14 +32,14 @@ class _InputTextFieldState extends State<InputTextField> {
   Widget build(BuildContext context) {
     final model = Provider.of<TingTingViewModel>(context);
 
-    _textController.text = model.selfWrittenText;
+    _textController.text = model.selfWritten;
 
     return Center(
       child: TextField(
         decoration: InputDecoration(border: OutlineInputBorder()),
         controller: _textController,
         onChanged: (value) {
-          model.selfWrittenText = value;
+          model.setSelfWritten(value);
         },
         maxLines: null,
         minLines: 1000,

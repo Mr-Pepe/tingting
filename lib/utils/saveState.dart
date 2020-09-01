@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // Preference keys
 const String ORIGINAL = 'tingting:original';
+const String SELF_WRITTEN = 'tingting:self_written';
 
 class SaveState {
   SharedPreferences _save;
@@ -17,11 +18,17 @@ class SaveState {
 
     // Check that all keys exist
     _save.getString(ORIGINAL) ?? _save.setString(ORIGINAL, '');
+    _save.getString(SELF_WRITTEN) ?? _save.setString(SELF_WRITTEN, '');
   }
 
   void setOriginal(String value) {
     _save.setString(ORIGINAL, value);
   }
 
+  void setSelfWritten(String value) {
+    _save.setString(SELF_WRITTEN, value);
+  }
+
   String get original => _save.getString(ORIGINAL) ?? '';
+  String get selfWritten => _save.getString(SELF_WRITTEN) ?? '';
 }

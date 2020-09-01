@@ -8,6 +8,7 @@ import 'package:tingting/utils/saveState.dart';
 class TingTingViewModel extends ChangeNotifier {
   TingTingViewModel(this._saveState) {
     _original = _saveState.original;
+    _selfWritten = _saveState.selfWritten;
   }
 
   final SaveState _saveState;
@@ -23,7 +24,8 @@ class TingTingViewModel extends ChangeNotifier {
 
   AudioPlayer player;
 
-  String selfWrittenText = '';
+  String _selfWritten = '';
+  String get selfWritten => _selfWritten;
   String _original = '';
   String get original => _original;
 
@@ -50,17 +52,22 @@ class TingTingViewModel extends ChangeNotifier {
 
   getDiff() async {
     if (lastCheckedOriginalText != original ||
-        lastCheckedSelfWrittenText != selfWrittenText) {
+        lastCheckedSelfWrittenText != selfWritten) {
       lastCheckedOriginalText = original;
-      lastCheckedSelfWrittenText = selfWrittenText;
+      lastCheckedSelfWrittenText = selfWritten;
 
-      alignment = compute(align, [original, selfWrittenText]);
+      alignment = compute(align, [original, selfWritten]);
     }
   }
 
   void setOriginal(String value) {
     _original = value;
     _saveState.setOriginal(value);
+  }
+
+  void setSelfWritten(String value) {
+    _selfWritten = value;
+    _saveState.setSelfWritten(value);
   }
 }
 
