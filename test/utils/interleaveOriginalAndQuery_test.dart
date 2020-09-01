@@ -56,5 +56,36 @@ main() {
         expect(interleaved.contains(queryContainers[i]), equals(outcome));
       }
     });
+
+    test(
+        'There is no empty line if the linebreak is at the beginning of a line',
+        () {
+      final lenRow = nContainers ~/ 2;
+      final lineBreak = 5;
+
+      final interleaved = interleaveOriginalAndQuery(
+          originalContainers, queryContainers, lenRow,
+          lineBreaks: [lineBreak]);
+
+      expect(interleaved.length, equals(18));
+
+      for (var i in Iterable<int>.generate(nContainers)) {
+        final outcome = (i == lineBreak) ? false : true;
+        expect(interleaved.contains(originalContainers[i]), equals(outcome));
+        expect(interleaved.contains(queryContainers[i]), equals(outcome));
+      }
+    });
+
+    test(
+        'Empty rows can optionally be inserted between original/query row pairs',
+        () {
+      final lenRow = nContainers ~/ 2;
+
+      final interleaved = interleaveOriginalAndQuery(
+          originalContainers, queryContainers, lenRow,
+          addSpacing: true);
+
+      expect(interleaved.length, 25);
+    });
   });
 }
