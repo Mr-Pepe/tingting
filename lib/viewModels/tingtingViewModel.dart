@@ -61,7 +61,8 @@ class TingTingViewModel extends ChangeNotifier {
       lastCheckedOriginalText = original;
       lastCheckedSelfWrittenText = selfWritten;
 
-      alignment = compute(align, [original, selfWritten]);
+      alignment = compute(
+          align, [original.replaceAll(RegExp(r"\n+"), '\n'), selfWritten]);
     }
   }
 

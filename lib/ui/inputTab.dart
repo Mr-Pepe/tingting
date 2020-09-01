@@ -4,16 +4,16 @@ import 'package:tingting/values/colors.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
-class InputTextField extends StatefulWidget {
+class InputTab extends StatefulWidget {
   final FocusNode focusNode;
 
-  InputTextField({Key key, this.focusNode}) : super(key: key);
+  InputTab({Key key, this.focusNode}) : super(key: key);
 
   @override
-  _InputTextFieldState createState() => _InputTextFieldState();
+  _InputTabState createState() => _InputTabState();
 }
 
-class _InputTextFieldState extends State<InputTextField> {
+class _InputTabState extends State<InputTab> {
   TextEditingController _textController;
 
   @override

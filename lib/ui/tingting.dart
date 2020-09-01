@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tingting/ui/diffTextField.dart';
-import 'package:tingting/ui/inputTextField.dart';
-import 'package:tingting/ui/originalTextField.dart';
+import 'package:tingting/ui/diffTab.dart';
+import 'package:tingting/ui/inputTab.dart';
+import 'package:tingting/ui/originalTab.dart';
 import 'package:tingting/ui/audioControls.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/values/strings.dart';
@@ -88,14 +88,15 @@ class _TingTingState extends State<TingTing>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  InputTextField(
-                    key: Key('inputTextField'),
+                  InputTab(
+                    key: Key('inputTab'),
                     focusNode: inputFocusNode,
                   ),
-                  DiffTextField(),
-                  OriginalTextField(
-                      key: Key('originalTextField'),
-                      focusNode: originalFocusNode),
+                  DiffTab(),
+                  OriginalTab(
+                    key: Key('originalTab'),
+                    focusNode: originalFocusNode,
+                  ),
                 ],
               ),
             ),
