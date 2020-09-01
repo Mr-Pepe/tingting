@@ -31,14 +31,14 @@ class _OriginalTextFieldState extends State<OriginalTextField> {
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<TingTingViewModel>(context);
-    _textController.text = model.originalText;
+    _textController.text = model.original;
 
     return Center(
       child: TextField(
         decoration: InputDecoration(border: OutlineInputBorder()),
         controller: _textController,
         onChanged: (value) {
-          model.originalText = value;
+          model.setOriginal(value);
         },
         maxLines: null,
         minLines: 1000,
