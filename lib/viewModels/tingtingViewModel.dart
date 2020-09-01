@@ -3,8 +3,19 @@ import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/aligner.dart';
 import 'package:tingting/utils/globalAlignment.dart';
+import 'package:tingting/utils/saveState.dart';
 
 class TingTingViewModel extends ChangeNotifier {
+  TingTingViewModel(this._saveState) {
+    _original = _saveState.original;
+    _selfWritten = _saveState.selfWritten;
+    if (_saveState.audioPath != '') {
+      setAudioFile(_saveState.audioPath);
+    }
+  }
+
+  final SaveState _saveState;
+
   String _audioFilePath;
   get audioFilePath => _audioFilePath;
 
@@ -16,8 +27,10 @@ class TingTingViewModel extends ChangeNotifier {
 
   AudioPlayer player;
 
-  String selfWrittenText = '';
-  String originalText = '';
+  String _selfWritten = '';
+  String get selfWritten => _selfWritten;
+  String _original = '';
+  String get original => _original;
 
   String lastCheckedSelfWrittenText;
   String lastCheckedOriginalText;
@@ -31,23 +44,35 @@ class TingTingViewModel extends ChangeNotifier {
       await player.setUrl(path);
 
       _audioFilePath = path;
+      _saveState.setAudioPath(path);
+
       notifyListeners();
       return true;
     } catch (e) {
       player = null;
       throw Exception(
-          "Could not load $path.\n\nDid you try loading a file with '?' or '#' in its name?");
+          "Could not load $path.\n\nDid you try loading a file with '?' or '#' in its name? Does the file still exist?");
     }
   }
 
   getDiff() async {
-    if (lastCheckedOriginalText != originalText ||
-        lastCheckedSelfWrittenText != selfWrittenText) {
-      lastCheckedOriginalText = originalText;
-      lastCheckedSelfWrittenText = selfWrittenText;
+    if (lastCheckedOriginalText != original ||
+        lastCheckedSelfWrittenText != selfWritten) {
+      lastCheckedOriginalText = original;
+      lastCheckedSelfWrittenText = selfWritten;
 
-      alignment = compute(align, [originalText, selfWrittenText]);
+      alignment = compute(align, [original, selfWritten]);
     }
+  }
+
+  void setOriginal(String value) {
+    _original = value;
+    _saveState.setOriginal(value);
+  }
+
+  void setSelfWritten(String value) {
+    _selfWritten = value;
+    _saveState.setSelfWritten(value);
   }
 }
 

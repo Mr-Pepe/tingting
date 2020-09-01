@@ -8,20 +8,28 @@ import 'package:provider/provider.dart';
 import 'package:tingting/ui/loadingIndicator.dart';
 import 'package:tingting/ui/notify.dart';
 import 'package:tingting/ui/tingting.dart';
+import 'package:tingting/utils/saveState.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
 import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final saveState = SaveState();
+  await saveState.init();
+
+  runApp(TingTingApp(saveState));
 }
 
-class MyApp extends StatefulWidget {
+class TingTingApp extends StatefulWidget {
+  final SaveState saveState;
+
+  TingTingApp(this.saveState);
   @override
-  _MyAppState createState() => _MyAppState();
+  _TingTingAppState createState() => _TingTingAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _TingTingAppState extends State<TingTingApp> {
   int mode = -1;
 
   @override
@@ -33,7 +41,7 @@ class _MyAppState extends State<MyApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: ChangeNotifierProvider<TingTingViewModel>(
-        create: (_) => TingTingViewModel(),
+        create: (_) => TingTingViewModel(widget.saveState),
         child: Consumer<TingTingViewModel>(
           builder: (context, model, child) {
             return Scaffold(
@@ -124,7 +132,7 @@ Future<bool> getAudioFromText(
   BuildContext context,
   TingTingViewModel model,
 ) async {
-  if (model.originalText.isEmpty) {
+  if (model.original.isEmpty) {
     notify(context, Strings.error, Strings.cantTtsBecauseOriginalEmpty);
     return Future.value(true);
   } else {
@@ -166,7 +174,7 @@ Future<bool> generateSpeechFromText(
   } else {
     await flutterTts.setLanguage(language);
 
-    await flutterTts.synthesizeToFile(model.originalText, filePath);
+    await flutterTts.synthesizeToFile(model.original, filePath);
   }
 
   return true;
