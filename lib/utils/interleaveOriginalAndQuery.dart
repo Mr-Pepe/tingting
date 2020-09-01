@@ -15,8 +15,10 @@ List<Container> interleaveOriginalAndQuery(
   final out = <Container>[];
 
   var fillUp = false;
+  var lastLineWasSpacing = false;
 
-  while (iCharOriginal < originalContainers.length) {
+  while (
+      iCharOriginal < originalContainers.length || iCharLine < nCharsPerLine) {
     if (iCharLine == nCharsPerLine) {
       out.addAll(rowOriginal);
       out.addAll(rowQuery);
@@ -25,12 +27,14 @@ List<Container> interleaveOriginalAndQuery(
       iCharLine = 0;
       fillUp = false;
 
-      if (addSpacing) {
+      if (addSpacing && !lastLineWasSpacing) {
         out.addAll(List.generate(nCharsPerLine, (index) => Container()));
+        lastLineWasSpacing = true;
       }
     }
 
-    if (lineBreaks.contains(iCharOriginal)) {
+    if (lineBreaks.contains(iCharOriginal) ||
+        iCharOriginal >= originalContainers.length) {
       fillUp = true;
       iCharOriginal++;
     }
@@ -44,6 +48,7 @@ List<Container> interleaveOriginalAndQuery(
       rowOriginal.add(originalContainers[iCharOriginal]);
       rowQuery.add(queryContainers[iCharOriginal]);
       iCharOriginal++;
+      lastLineWasSpacing = false;
     }
 
     iCharLine++;

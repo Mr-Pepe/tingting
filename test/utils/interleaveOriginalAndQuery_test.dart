@@ -45,7 +45,7 @@ main() {
           originalContainers, queryContainers, lenRow,
           lineBreaks: [lineBreak]);
 
-      expect(interleaved.length, equals(22));
+      expect(interleaved.length, equals(30));
       for (var i in [13, 14, 18, 19]) {
         expect(interleaved[i].child, equals(null));
       }
@@ -67,7 +67,7 @@ main() {
           originalContainers, queryContainers, lenRow,
           lineBreaks: [lineBreak]);
 
-      expect(interleaved.length, equals(18));
+      expect(interleaved.length, equals(20));
 
       for (var i in Iterable<int>.generate(nContainers)) {
         final outcome = (i == lineBreak) ? false : true;
@@ -85,7 +85,31 @@ main() {
           originalContainers, queryContainers, lenRow,
           addSpacing: true);
 
-      expect(interleaved.length, 25);
+      expect(interleaved.length, equals(25));
+    });
+
+    test('The last line gets filled up to the end', () {
+      final lenRow = 3;
+
+      final interleaved = interleaveOriginalAndQuery(
+          originalContainers, queryContainers, lenRow);
+
+      expect(interleaved.length, equals(24));
+    });
+
+    test('There is only one line for spacing', () {
+      final lenRow = nContainers ~/ 2;
+      final lineBreaks = [5];
+
+      final interleaved = interleaveOriginalAndQuery(
+        originalContainers,
+        queryContainers,
+        lenRow,
+        lineBreaks: lineBreaks,
+        addSpacing: true,
+      );
+
+      expect(interleaved.length, equals(25));
     });
   });
 }
