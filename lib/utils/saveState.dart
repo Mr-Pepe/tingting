@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Preference keys
 const String ORIGINAL = 'tingting:original';
 const String SELF_WRITTEN = 'tingting:self_written';
+const String AUDIO_PATH = 'tingting:audio_path';
 
 class SaveState {
   SharedPreferences _save;
@@ -19,6 +20,7 @@ class SaveState {
     // Check that all keys exist
     _save.getString(ORIGINAL) ?? _save.setString(ORIGINAL, '');
     _save.getString(SELF_WRITTEN) ?? _save.setString(SELF_WRITTEN, '');
+    _save.getString(AUDIO_PATH) ?? _save.setString(AUDIO_PATH, '');
   }
 
   void setOriginal(String value) {
@@ -29,6 +31,11 @@ class SaveState {
     _save.setString(SELF_WRITTEN, value);
   }
 
+  void setAudioPath(String value) {
+    _save.setString(AUDIO_PATH, value);
+  }
+
   String get original => _save.getString(ORIGINAL) ?? '';
   String get selfWritten => _save.getString(SELF_WRITTEN) ?? '';
+  String get audioPath => _save.getString(AUDIO_PATH) ?? '';
 }

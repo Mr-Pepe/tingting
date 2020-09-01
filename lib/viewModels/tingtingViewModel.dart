@@ -9,6 +9,9 @@ class TingTingViewModel extends ChangeNotifier {
   TingTingViewModel(this._saveState) {
     _original = _saveState.original;
     _selfWritten = _saveState.selfWritten;
+    if (_saveState.audioPath != '') {
+      setAudioFile(_saveState.audioPath);
+    }
   }
 
   final SaveState _saveState;
@@ -41,12 +44,14 @@ class TingTingViewModel extends ChangeNotifier {
       await player.setUrl(path);
 
       _audioFilePath = path;
+      _saveState.setAudioPath(path);
+
       notifyListeners();
       return true;
     } catch (e) {
       player = null;
       throw Exception(
-          "Could not load $path.\n\nDid you try loading a file with '?' or '#' in its name?");
+          "Could not load $path.\n\nDid you try loading a file with '?' or '#' in its name? Does the file still exist?");
     }
   }
 
