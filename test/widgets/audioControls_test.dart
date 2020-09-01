@@ -85,6 +85,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.replay), findsOneWidget);
+
+      playerStateStreamController.close();
     });
   });
 }

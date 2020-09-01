@@ -2,16 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:provider/provider.dart';
-import 'package:tingting/ui/loadingIndicator.dart';
 import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/utils/interleaveOriginalAndQuery.dart';
 import 'package:tingting/values/colors.dart';
 import 'package:tingting/values/dimensions.dart';
-import 'package:tingting/values/strings.dart';
-import 'package:tingting/viewModels/tingtingViewModel.dart';
 
-class DiffTextField extends StatelessWidget {
+class DiffBox extends StatelessWidget {
+  DiffBox(this.alignment);
+
+  final GlobalAlignment alignment;
+
   final coloredOriginal = <Container>[];
   final coloredQuery = <Container>[];
   final textStyle =
@@ -19,32 +19,8 @@ class DiffTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = Provider.of<TingTingViewModel>(context);
+    _colorOriginalAndQuery();
 
-    return FutureBuilder<GlobalAlignment>(
-        future: model.alignment,
-        builder: (context, alignment) {
-          Widget widget;
-          if (alignment.connectionState == ConnectionState.done) {
-            if (!alignment.hasData || alignment.data.isEmpty()) {
-              widget = _noComparisonAvailable();
-            } else {
-              _colorOriginalAndQuery(alignment.data);
-              widget = _getDiffBox(context, alignment.data.original);
-            }
-          } else if (alignment.hasError) {
-            widget = _somethingWentWrong();
-          } else if (alignment.connectionState == ConnectionState.none) {
-            widget = _noComparisonAvailable();
-          } else {
-            widget = loadingIndicator(text: Strings.generatingDiff);
-          }
-
-          return widget;
-        });
-  }
-
-  Widget _getDiffBox(BuildContext context, List<String> original) {
     return Container(
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -62,8 +38,18 @@ class DiffTextField extends StatelessWidget {
 
                 final nCharsPerLine = (boxWidth / cellSize).floor().toInt();
 
+                List<int> lineBreaks = [];
+                alignment.original.asMap().forEach((key, value) {
+                  if (value == '\n') lineBreaks.add(key);
+                });
+
                 List<Container> interleavedLines = interleaveOriginalAndQuery(
-                    coloredOriginal, coloredQuery, nCharsPerLine);
+                  coloredOriginal,
+                  coloredQuery,
+                  nCharsPerLine,
+                  addSpacing: true,
+                  lineBreaks: lineBreaks,
+                );
 
                 return StaggeredGridView.countBuilder(
                   itemCount: interleavedLines.length,
@@ -81,7 +67,7 @@ class DiffTextField extends StatelessWidget {
     );
   }
 
-  void _colorOriginalAndQuery(GlobalAlignment alignment) {
+  void _colorOriginalAndQuery() {
     for (var iCharacter = 0;
         iCharacter < alignment.original.length;
         iCharacter++) {
@@ -115,34 +101,19 @@ class DiffTextField extends StatelessWidget {
       );
     }
   }
+}
 
-  double _getCellSize(
-      BuildContext context, BoxConstraints constraints, TextStyle textStyle) {
-    final richTextWidget = Text.rich(TextSpan(text: '你', style: textStyle))
-        .build(context) as RichText;
-    final renderObject = richTextWidget.createRenderObject(context);
+double _getCellSize(
+    BuildContext context, BoxConstraints constraints, TextStyle textStyle) {
+  final richTextWidget = Text.rich(TextSpan(text: '你', style: textStyle))
+      .build(context) as RichText;
+  final renderObject = richTextWidget.createRenderObject(context);
 
-    renderObject.layout(constraints);
+  renderObject.layout(constraints);
 
-    final lastBox = renderObject
-        .getBoxesForSelection(TextSelection(baseOffset: 0, extentOffset: 1))
-        .last;
+  final lastBox = renderObject
+      .getBoxesForSelection(TextSelection(baseOffset: 0, extentOffset: 1))
+      .last;
 
-    return max(lastBox.bottom - lastBox.top, lastBox.right - lastBox.left);
-  }
-
-  Widget _noComparisonAvailable() {
-    return Center(
-      child: Text(
-        Strings.noComparisonAvailable,
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _somethingWentWrong() {
-    return Center(
-      child: Text(Strings.oops),
-    );
-  }
+  return max(lastBox.bottom - lastBox.top, lastBox.right - lastBox.left);
 }
