@@ -3,3 +3,5 @@ class AudioGenerationMode {
   static const int fromText = 1;
   static const int fromWeb = 2;
 }
+
+final punctuation = ['.', '，', '。', '\n', '、'];
