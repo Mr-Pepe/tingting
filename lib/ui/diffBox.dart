@@ -37,6 +37,7 @@ class DiffBox extends StatelessWidget {
               final diffGrid = generateDiffGrid(alignment, nCharsPerLine);
 
               return StaggeredGridView.countBuilder(
+                padding: EdgeInsets.only(top: 0),
                 itemCount: diffGrid.length,
                 crossAxisCount: nCharsPerLine,
                 scrollDirection: Axis.vertical,
