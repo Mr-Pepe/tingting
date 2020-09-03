@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tingting/ui/diffTab.dart';
 import 'package:tingting/ui/inputTab.dart';
 import 'package:tingting/ui/originalTab.dart';
-import 'package:tingting/ui/audioControls.dart';
+import 'package:tingting/ui/audioControls/audioControls.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
