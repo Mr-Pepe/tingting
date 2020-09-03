@@ -6,6 +6,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/audioControls/audioControls.dart';
+import 'package:tingting/ui/audioControls/seekBar.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 class MockTingTingViewModel extends Mock implements TingTingViewModel {}
@@ -46,7 +47,7 @@ void main() {
 
       await _pumpWidget(tester, player);
 
-      expect(find.byType(ProgressBar), findsOneWidget);
+      expect(find.byType(SeekBar), findsOneWidget);
     });
 
     testWidgets(
@@ -58,7 +59,7 @@ void main() {
       await _pumpWidget(tester, player);
 
       expect(find.byType(IconButton), findsNothing);
-      expect(find.byType(ProgressBar), findsNothing);
+      expect(find.byType(SeekBar), findsNothing);
     });
 
     testWidgets(
