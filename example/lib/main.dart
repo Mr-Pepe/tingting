@@ -12,15 +12,11 @@ void main() async {
   runApp(TingTingApp(saveState));
 }
 
-class TingTingApp extends StatefulWidget {
+class TingTingApp extends StatelessWidget {
   final SaveState saveState;
 
   TingTingApp(this.saveState);
-  @override
-  _TingTingAppState createState() => _TingTingAppState();
-}
 
-class _TingTingAppState extends State<TingTingApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,7 +26,7 @@ class _TingTingAppState extends State<TingTingApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: ChangeNotifierProvider<TingTingViewModel>(
-        create: (_) => TingTingViewModel(widget.saveState),
+        create: (_) => TingTingViewModel(saveState),
         child: Consumer<TingTingViewModel>(
           builder: (context, model, child) {
             return Scaffold(
