@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:tingting/ui/audioControls/seekBar.dart';
 import 'package:tingting/utils/utils.dart';
 import 'package:tingting/values/dimensions.dart';
 
 class AudioControls extends StatelessWidget {
+  final Icon volumeUpIcon;
+  final Icon replay5Icon;
+  final Icon replayIcon;
+  final Icon pauseIcon;
+  final Icon playArrow;
+
+  AudioControls({
+    this.volumeUpIcon: const Icon(Icons.volume_up),
+    this.replay5Icon: const Icon(Icons.replay_5),
+    this.replayIcon: const Icon(Icons.replay),
+    this.pauseIcon: const Icon(Icons.pause),
+    this.playArrow: const Icon(Icons.play_arrow),
+  });
+
   @override
   Widget build(BuildContext context) {
     final player = Provider.of<AudioPlayer>(context);
@@ -30,7 +45,7 @@ class AudioControls extends StatelessWidget {
 
                 if (playerState != null) {
                   return Column(children: <Widget>[
-                    ProgressBar(
+                    SeekBar(
                       duration: duration,
                       position: position,
                       onChangeEnd: (newPosition) {
@@ -42,7 +57,7 @@ class AudioControls extends StatelessWidget {
                       children: <Widget>[
                         IconButton(
                           iconSize: otherButtonsSize,
-                          icon: Icon(Icons.volume_up),
+                          icon: volumeUpIcon,
                           onPressed: () {
                             _showSliderDialog(
                               context: context,
@@ -57,7 +72,7 @@ class AudioControls extends StatelessWidget {
                         ),
                         IconButton(
                           iconSize: otherButtonsSize,
-                          icon: Icon(Icons.replay_5),
+                          icon: replay5Icon,
                           onPressed: () {
                             player.seek(clampDuration(
                                 position - Duration(seconds: 5),
@@ -116,19 +131,16 @@ class AudioControls extends StatelessWidget {
       },
     );
   }
-}
 
-Icon _getCenterButtonIcon(ProcessingState processingState, bool playing) {
-  IconData centerButtonIcon;
-  if (processingState == ProcessingState.completed) {
-    centerButtonIcon = Icons.replay;
-  } else if (playing == true) {
-    centerButtonIcon = Icons.pause;
-  } else {
-    centerButtonIcon = Icons.play_arrow;
+  Icon _getCenterButtonIcon(ProcessingState processingState, bool playing) {
+    if (processingState == ProcessingState.completed) {
+      return replayIcon;
+    } else if (playing == true) {
+      return pauseIcon;
+    } else {
+      return playArrow;
+    }
   }
-
-  return Icon(centerButtonIcon);
 }
 
 _centerButtonCallback(
@@ -180,85 +192,4 @@ _showSliderDialog({
       ),
     ),
   );
-}
-
-class ProgressBar extends StatefulWidget {
-  final Duration duration;
-  final Duration position;
-  final ValueChanged<Duration> onChanged;
-  final ValueChanged<Duration> onChangeEnd;
-
-  ProgressBar({
-    @required this.duration,
-    @required this.position,
-    this.onChanged,
-    this.onChangeEnd,
-  });
-
-  @override
-  _ProgressBarState createState() => _ProgressBarState();
-}
-
-class _ProgressBarState extends State<ProgressBar> {
-  Duration _dragValue;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        textFieldPadding,
-        4,
-        textFieldPadding,
-        0,
-      ),
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            left: 8.0,
-            bottom: 0.0,
-            child: Text(
-                RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                        .firstMatch("$_position")
-                        ?.group(1) ??
-                    '$_position',
-                style: Theme.of(context).textTheme.caption),
-          ),
-          Slider(
-            min: 0.0,
-            max: widget.duration.inMilliseconds.toDouble(),
-            value: _dragValue?.inMilliseconds?.toDouble() ??
-                widget.position.inMilliseconds.toDouble(),
-            onChanged: (value) {
-              setState(() {
-                _dragValue = Duration(milliseconds: value.round());
-              });
-              if (widget.onChanged != null) {
-                widget.onChanged(Duration(milliseconds: value.round()));
-              }
-            },
-            onChangeEnd: (value) {
-              _dragValue = null;
-              if (widget.onChangeEnd != null) {
-                widget.onChangeEnd(Duration(milliseconds: value.round()));
-              }
-            },
-          ),
-          Positioned(
-            right: 16.0,
-            bottom: 0.0,
-            child: Text(
-                RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                        .firstMatch("${widget.duration}")
-                        ?.group(1) ??
-                    '${widget.duration}',
-                style: Theme.of(context).textTheme.caption),
-          ),
-        ],
-      ),
-    );
-  }
-
-  get _position {
-    return _dragValue ?? widget.position;
-  }
 }
