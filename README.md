@@ -1,16 +1,20 @@
-# tingting
+# TingTing - Boost your listening comprehension
 
-A new Flutter project.
+TingTing helps you to improve your listening comprehension in a few easy steps:
+* Copy text into the app as a reference
+* Load audio from a file or generate it from the text you copied
+* Transcribe what you hear
+* Let TingTing compare your writing to the reference and tell you exactly where you got things wrong
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+TingTing uses the [Needleman-Wunsch algorithm](https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm) to compare the self written transcript to the original.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Issues and feature requests
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Please file an issue on the project page if something doesn't work as expected or if you have a feature request.
+
+
+## Contribute
+
+Pull requests are always welcome, as long as they don't break existing tests and include tests for new functionality.
