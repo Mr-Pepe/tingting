@@ -30,4 +30,11 @@ void main() {
 
     expect(alignment.mismatchIndices, equals([false, true, false]));
   });
+
+  test('Line break indices indicate where the original has line breaks', () {
+    final alignment =
+        GlobalAlignment(original: 'a\nc'.split(''), query: 'a c'.split(''));
+
+    expect(alignment.lineBreakIndices, equals([false, true, false]));
+  });
 }

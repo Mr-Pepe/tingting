@@ -36,16 +36,11 @@ List<Container> generateDiffGrid(GlobalAlignment alignment, int nCharsPerLine) {
         ))),
   );
 
-  List<int> lineBreaks = [];
-  alignment.original.asMap().forEach((key, value) {
-    if (value == '\n') lineBreaks.add(key);
-  });
-
   return interleaveOriginalAndQuery(
     coloredOriginal,
     coloredQuery,
     nCharsPerLine,
     addSpacing: true,
-    lineBreaks: lineBreaks,
+    lineBreakIndices: alignment.lineBreakIndices,
   );
 }

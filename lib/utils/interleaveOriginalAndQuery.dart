@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
 
+/// Takes two lists and merges them into one list. The resulting list alternates
+/// between [ncharsPerLine] elements of [originalContainers] followed by
+/// [nCharsPerLine] elements of [queryContainers].
+/// They are followed by [nCharsPerline] empty containers if [addSpacing] is set
+/// to true.
+/// If [lineBreakIndices] is provided, the lines are wrapped according to those
+/// indices.
+/// An [ArgumentError] gets thrown if [originalContainer], [queryContainers] and
+/// [lineBreakIndices] are not the same length.
 List<Container> interleaveOriginalAndQuery(
   List<Container> originalContainers,
   List<Container> queryContainers,
   int nCharsPerLine, {
-  List<int> lineBreaks: const [],
+  List<bool> lineBreakIndices: const [],
   bool addSpacing: false,
 }) {
+  if (originalContainers.length != queryContainers.length) {
+    throw ArgumentError('Original and query must be of same size.');
+  }
+  if (lineBreakIndices.isNotEmpty &&
+      originalContainers.length != lineBreakIndices.length) {
+    throw ArgumentError(
+        'Original and line break indices must be of the same size.');
+  }
   var iCharOriginal = 0;
   var iCharLine = 0;
 
@@ -33,8 +50,8 @@ List<Container> interleaveOriginalAndQuery(
       }
     }
 
-    if (lineBreaks.contains(iCharOriginal) ||
-        iCharOriginal >= originalContainers.length) {
+    if (iCharOriginal >= originalContainers.length ||
+        lineBreakIndices.isNotEmpty && lineBreakIndices[iCharOriginal]) {
       fillUp = true;
       iCharOriginal++;
     }

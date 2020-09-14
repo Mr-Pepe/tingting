@@ -39,11 +39,11 @@ main() {
         'If linebreak indices are provided the corresponding elements are not added and a new line is started',
         () {
       final lenRow = nContainers ~/ 2;
-      final lineBreak = 8;
+      final lineBreakIndices = List.generate(nContainers, (i) => i == 8);
 
       final interleaved = interleaveOriginalAndQuery(
           originalContainers, queryContainers, lenRow,
-          lineBreaks: [lineBreak]);
+          lineBreakIndices: lineBreakIndices);
 
       expect(interleaved.length, equals(30));
       for (var i in [13, 14, 18, 19]) {
@@ -51,7 +51,7 @@ main() {
       }
 
       for (var i in Iterable<int>.generate(nContainers)) {
-        final outcome = (i == lineBreak) ? false : true;
+        final outcome = !lineBreakIndices[i];
         expect(interleaved.contains(originalContainers[i]), equals(outcome));
         expect(interleaved.contains(queryContainers[i]), equals(outcome));
       }
@@ -61,16 +61,16 @@ main() {
         'There is no empty line if the linebreak is at the beginning of a line',
         () {
       final lenRow = nContainers ~/ 2;
-      final lineBreak = 5;
+      final lineBreakIndices = List.generate(nContainers, (i) => i == 5);
 
       final interleaved = interleaveOriginalAndQuery(
           originalContainers, queryContainers, lenRow,
-          lineBreaks: [lineBreak]);
+          lineBreakIndices: lineBreakIndices);
 
       expect(interleaved.length, equals(20));
 
       for (var i in Iterable<int>.generate(nContainers)) {
-        final outcome = (i == lineBreak) ? false : true;
+        final outcome = !lineBreakIndices[i];
         expect(interleaved.contains(originalContainers[i]), equals(outcome));
         expect(interleaved.contains(queryContainers[i]), equals(outcome));
       }
@@ -99,17 +99,63 @@ main() {
 
     test('There is only one line for spacing', () {
       final lenRow = nContainers ~/ 2;
-      final lineBreaks = [5];
+      final lineBreakIndices = List.generate(nContainers, (i) => i == 5);
 
       final interleaved = interleaveOriginalAndQuery(
         originalContainers,
         queryContainers,
         lenRow,
-        lineBreaks: lineBreaks,
+        lineBreakIndices: lineBreakIndices,
         addSpacing: true,
       );
 
       expect(interleaved.length, equals(25));
+    });
+  });
+
+  group('Error handling', () {
+    test('Throws argument error if original and query are not the same length',
+        () {
+      final originalContainers = List.generate(5,
+          (index) => Container(child: Center(child: Text(index.toString()))));
+      final queryContainers = List.generate(
+          4,
+          (index) =>
+              Container(child: Center(child: Text((index + 5).toString()))));
+
+      final lenRow = 100;
+
+      expect(
+          () => interleaveOriginalAndQuery(
+                originalContainers,
+                queryContainers,
+                lenRow,
+              ),
+          throwsArgumentError);
+    });
+
+    test(
+        'Throws argument error if original and line break indices are not the same length',
+        () {
+      final originalContainers = List.generate(5,
+          (index) => Container(child: Center(child: Text(index.toString()))));
+      final queryContainers = List.generate(
+          5,
+          (index) =>
+              Container(child: Center(child: Text((index + 5).toString()))));
+
+      final lenRow = 100;
+
+      final lineBreakIndices = [true, true];
+
+      expect(
+          () => interleaveOriginalAndQuery(
+                originalContainers,
+                queryContainers,
+                lenRow,
+                lineBreakIndices: lineBreakIndices,
+              ),
+          throwsArgumentError);
     });
   });
 }
