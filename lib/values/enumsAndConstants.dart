@@ -48,6 +48,4 @@ final punctuation = Set.from([
   '-',
   '～',
   '…',
-  ' ',
-  ' '
 ]);

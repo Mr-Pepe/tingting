@@ -1,17 +1,20 @@
-import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
 
-List<bool> getMismatchIndices(GlobalAlignment alignment) {
-  return List.generate(alignment.original.length, (index) {
-    final originalChar = alignment.original[index];
-    final queryChar = alignment.query[index];
+List<bool> getMismatchIndices(
+  List<String> original,
+  List<String> query, {
+  bool countPunctuationErrors = true,
+}) {
+  return List.generate(original.length, (index) {
+    final originalChar = original[index];
+    final queryChar = query[index];
 
-    if (!punctuation.contains(originalChar) &&
-        !punctuation.contains(queryChar) &&
-        (originalChar != queryChar)) {
-      return true;
+    if (countPunctuationErrors) {
+      return originalChar != queryChar;
     } else {
-      return false;
+      return !punctuation.contains(originalChar) &&
+          !punctuation.contains(queryChar) &&
+          (originalChar != queryChar);
     }
   });
 }
