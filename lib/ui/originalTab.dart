@@ -34,19 +34,21 @@ class _OriginalTabState extends State<OriginalTab> {
     _textController.text = model.original;
 
     return Center(
-      child: TextField(
-        decoration: InputDecoration(border: OutlineInputBorder()),
-        controller: _textController,
-        onChanged: (value) {
-          model.setOriginal(value);
-        },
-        maxLines: null,
-        minLines: 1000,
-        focusNode: widget.focusNode,
-        style: TextStyle(
-            fontSize: textFieldFontSize,
-            letterSpacing: 3,
-            color: generalTextColor),
+      child: Scrollbar(
+        child: TextField(
+          decoration: InputDecoration(border: OutlineInputBorder()),
+          controller: _textController,
+          onChanged: (value) {
+            model.setOriginal(value);
+          },
+          maxLines: null,
+          minLines: 1000,
+          focusNode: widget.focusNode,
+          style: TextStyle(
+              fontSize: textFieldFontSize,
+              letterSpacing: 3,
+              color: generalTextColor),
+        ),
       ),
     );
   }

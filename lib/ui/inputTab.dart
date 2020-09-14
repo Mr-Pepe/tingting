@@ -35,19 +35,21 @@ class _InputTabState extends State<InputTab> {
     _textController.text = model.selfWritten;
 
     return Center(
-      child: TextField(
-        decoration: InputDecoration(border: OutlineInputBorder()),
-        controller: _textController,
-        onChanged: (value) {
-          model.setSelfWritten(value);
-        },
-        maxLines: null,
-        minLines: 1000,
-        focusNode: widget.focusNode,
-        style: TextStyle(
-            fontSize: textFieldFontSize,
-            letterSpacing: 3,
-            color: generalTextColor),
+      child: Scrollbar(
+        child: TextField(
+          decoration: InputDecoration(border: OutlineInputBorder()),
+          controller: _textController,
+          onChanged: (value) {
+            model.setSelfWritten(value);
+          },
+          maxLines: null,
+          minLines: 1000,
+          focusNode: widget.focusNode,
+          style: TextStyle(
+              fontSize: textFieldFontSize,
+              letterSpacing: 3,
+              color: generalTextColor),
+        ),
       ),
     );
   }

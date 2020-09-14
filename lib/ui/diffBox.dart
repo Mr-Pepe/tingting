@@ -13,41 +13,43 @@ class DiffBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).primaryColor, width: 2),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 8, vertical: textFieldPadding),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final boxWidth = constraints.maxWidth;
+      child: Scrollbar(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 8, vertical: textFieldPadding),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final boxWidth = constraints.maxWidth;
 
-              final cellSize = getCellSize(
-                context,
-                constraints,
-                TextStyle(fontSize: textFieldFontSize),
-                '你',
-              );
+                final cellSize = getCellSize(
+                  context,
+                  constraints,
+                  TextStyle(fontSize: textFieldFontSize),
+                  '你',
+                );
 
-              final nCharsPerLine = (boxWidth / cellSize).floor().toInt();
+                final nCharsPerLine = (boxWidth / cellSize).floor().toInt();
 
-              final diffGrid = generateDiffGrid(alignment, nCharsPerLine);
+                final diffGrid = generateDiffGrid(alignment, nCharsPerLine);
 
-              return StaggeredGridView.countBuilder(
-                padding: EdgeInsets.only(top: 0),
-                itemCount: diffGrid.length,
-                crossAxisCount: nCharsPerLine,
-                scrollDirection: Axis.vertical,
-                itemBuilder: (context, index) => diffGrid[index],
-                staggeredTileBuilder: (index) => StaggeredTile.count(
-                    1, ((index / nCharsPerLine).floor() % 3) == 2 ? 0.5 : 1),
-                crossAxisSpacing: 1,
-                mainAxisSpacing: 1,
-              );
-            },
+                return StaggeredGridView.countBuilder(
+                  padding: EdgeInsets.only(top: 0),
+                  itemCount: diffGrid.length,
+                  crossAxisCount: nCharsPerLine,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) => diffGrid[index],
+                  staggeredTileBuilder: (index) => StaggeredTile.count(
+                      1, ((index / nCharsPerLine).floor() % 3) == 2 ? 0.5 : 1),
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 1,
+                );
+              },
+            ),
           ),
         ),
       ),
