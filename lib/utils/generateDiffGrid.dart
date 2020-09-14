@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tingting/utils/getMismatchIndices.dart';
 import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/utils/interleaveOriginalAndQuery.dart';
 import 'package:tingting/values/colors.dart';
@@ -11,12 +10,10 @@ List<Container> generateDiffGrid(GlobalAlignment alignment, int nCharsPerLine) {
     color: generalTextColor,
   );
 
-  final mismatchIndices = getMismatchIndices(alignment);
-
   final coloredOriginal = List.generate(
     alignment.original.length,
     (index) => Container(
-        color: mismatchIndices[index]
+        color: alignment.mismatchIndices[index]
             ? wrongCharacterBackgroundcolor
             : Colors.transparent,
         child: Center(
@@ -29,7 +26,7 @@ List<Container> generateDiffGrid(GlobalAlignment alignment, int nCharsPerLine) {
   final coloredQuery = List.generate(
     alignment.original.length,
     (index) => Container(
-        color: mismatchIndices[index]
+        color: alignment.mismatchIndices[index]
             ? wrongCharacterBackgroundcolor
             : Colors.transparent,
         child: Center(
@@ -39,16 +36,11 @@ List<Container> generateDiffGrid(GlobalAlignment alignment, int nCharsPerLine) {
         ))),
   );
 
-  List<int> lineBreaks = [];
-  alignment.original.asMap().forEach((key, value) {
-    if (value == '\n') lineBreaks.add(key);
-  });
-
   return interleaveOriginalAndQuery(
     coloredOriginal,
     coloredQuery,
     nCharsPerLine,
     addSpacing: true,
-    lineBreaks: lineBreaks,
+    lineBreakIndices: alignment.lineBreakIndices,
   );
 }

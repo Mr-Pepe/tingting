@@ -24,4 +24,17 @@ void main() {
       expect(GlobalAlignment(original: ['a'], query: ['a']).isEmpty(), false);
     });
   });
+  test('Mismatch indices indicate where query and original are not equal', () {
+    final alignment =
+        GlobalAlignment(original: 'abc'.split(''), query: 'aac'.split(''));
+
+    expect(alignment.mismatchIndices, equals([false, true, false]));
+  });
+
+  test('Line break indices indicate where the original has line breaks', () {
+    final alignment =
+        GlobalAlignment(original: 'a\nc'.split(''), query: 'a c'.split(''));
+
+    expect(alignment.lineBreakIndices, equals([false, true, false]));
+  });
 }

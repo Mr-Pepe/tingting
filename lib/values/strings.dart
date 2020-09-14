@@ -20,4 +20,6 @@ class Strings {
   static final tabYours = "Yours";
   static final tabDiff = "Comparison";
   static final tabOriginal = "Original";
+
+  static final alignmentPlaceholder = ' ';
 }
