@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tingting/utils/interleaveOriginalAndQuery.dart';
+import 'package:tingting/values/strings.dart';
 
 main() {
   group('Test interleaving', () {
@@ -11,6 +12,11 @@ main() {
         nContainers,
         (index) => Container(
             child: Center(child: Text((index + nContainers).toString()))));
+
+    final queryContainersPlaceholder = List.generate(
+        nContainers,
+        (index) => Container(
+            child: Center(child: Text((Strings.alignmentPlaceholder)))));
 
     test(
         'Returns original and query appended if they fit exactly in a line each',
@@ -36,13 +42,13 @@ main() {
     });
 
     test(
-        'If linebreak indices are provided the corresponding elements are not added and a new line is started',
+        'If linebreak indices are provided and the self written text is only the placeholder at those positions the corresponding elements are not added and a new line is started',
         () {
       final lenRow = nContainers ~/ 2;
       final lineBreakIndices = List.generate(nContainers, (i) => i == 8);
 
       final interleaved = interleaveOriginalAndQuery(
-          originalContainers, queryContainers, lenRow,
+          originalContainers, queryContainersPlaceholder, lenRow,
           lineBreakIndices: lineBreakIndices);
 
       expect(interleaved.length, equals(30));
@@ -53,8 +59,39 @@ main() {
       for (var i in Iterable<int>.generate(nContainers)) {
         final outcome = !lineBreakIndices[i];
         expect(interleaved.contains(originalContainers[i]), equals(outcome));
-        expect(interleaved.contains(queryContainers[i]), equals(outcome));
+        expect(interleaved.contains(queryContainersPlaceholder[i]),
+            equals(outcome));
       }
+    });
+
+    test('Self written character gets still written if aligned with line break',
+        () {
+      final originalContainers = List.generate(
+        3,
+        (index) => Container(child: Center(child: Text(index.toString()))),
+      );
+      final queryContainers = List.generate(3,
+          (index) => Container(child: Center(child: Text((index).toString()))));
+
+      final lenRow = 3;
+
+      final lineBreakIndices = [false, true, false];
+
+      final interleaved = interleaveOriginalAndQuery(
+        originalContainers,
+        queryContainers,
+        lenRow,
+        lineBreakIndices: lineBreakIndices,
+      );
+
+      expect(interleaved.length, equals(12));
+
+      expect(interleaved[0], originalContainers[0]);
+      expect(interleaved[1], originalContainers[1]);
+      expect(interleaved[3], queryContainers[0]);
+      expect(interleaved[4], queryContainers[1]);
+      expect(interleaved[6], originalContainers[2]);
+      expect(interleaved[9], queryContainers[2]);
     });
 
     test(
@@ -64,7 +101,7 @@ main() {
       final lineBreakIndices = List.generate(nContainers, (i) => i == 5);
 
       final interleaved = interleaveOriginalAndQuery(
-          originalContainers, queryContainers, lenRow,
+          originalContainers, queryContainersPlaceholder, lenRow,
           lineBreakIndices: lineBreakIndices);
 
       expect(interleaved.length, equals(20));
@@ -72,7 +109,8 @@ main() {
       for (var i in Iterable<int>.generate(nContainers)) {
         final outcome = !lineBreakIndices[i];
         expect(interleaved.contains(originalContainers[i]), equals(outcome));
-        expect(interleaved.contains(queryContainers[i]), equals(outcome));
+        expect(interleaved.contains(queryContainersPlaceholder[i]),
+            equals(outcome));
       }
     });
 
@@ -103,7 +141,7 @@ main() {
 
       final interleaved = interleaveOriginalAndQuery(
         originalContainers,
-        queryContainers,
+        queryContainersPlaceholder,
         lenRow,
         lineBreakIndices: lineBreakIndices,
         addSpacing: true,

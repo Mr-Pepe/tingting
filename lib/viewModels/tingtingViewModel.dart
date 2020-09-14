@@ -4,6 +4,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/aligner.dart';
 import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/utils/saveState.dart';
+import 'package:tingting/values/strings.dart';
 
 class TingTingViewModel extends ChangeNotifier {
   TingTingViewModel(this._saveState) {
@@ -81,6 +82,6 @@ Future<GlobalAlignment> align(List<String> input) {
   return Future.value(Aligner(
     original: input[0],
     query: input[1],
-    placeholder: ' ',
+    placeholder: Strings.alignmentPlaceholder,
   ).alignment);
 }

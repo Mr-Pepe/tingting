@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:tingting/values/strings.dart';
 
-/// Takes two lists and merges them into one list. The resulting list alternates
-/// between [ncharsPerLine] elements of [originalContainers] followed by
-/// [nCharsPerLine] elements of [queryContainers].
-/// They are followed by [nCharsPerline] empty containers if [addSpacing] is set
-/// to true.
+/// Takes two lists of containers and interleaves them into one list.
+///
+/// The resulting list alternates between [ncharsPerLine] elements of [original]
+/// followed by [nCharsPerLine] elements of [query]. They are followed by
+/// [nCharsPerline] empty containers if [addSpacing] is set to true.
 /// If [lineBreakIndices] is provided, the lines are wrapped according to those
-/// indices.
-/// An [ArgumentError] gets thrown if [originalContainer], [queryContainers] and
+/// indices. An [ArgumentError] gets thrown if [original], [query] and
 /// [lineBreakIndices] are not the same length.
 List<Container> interleaveOriginalAndQuery(
-  List<Container> originalContainers,
-  List<Container> queryContainers,
+  List original,
+  List query,
   int nCharsPerLine, {
   List<bool> lineBreakIndices: const [],
   bool addSpacing: false,
 }) {
-  if (originalContainers.length != queryContainers.length) {
+  if (original.length != query.length) {
     throw ArgumentError('Original and query must be of same size.');
   }
   if (lineBreakIndices.isNotEmpty &&
-      originalContainers.length != lineBreakIndices.length) {
+      original.length != lineBreakIndices.length) {
     throw ArgumentError(
         'Original and line break indices must be of the same size.');
   }
@@ -32,10 +32,10 @@ List<Container> interleaveOriginalAndQuery(
   final out = <Container>[];
 
   var fillUp = false;
+  var fillUpNextTime = false;
   var lastLineWasSpacing = false;
 
-  while (
-      iCharOriginal < originalContainers.length || iCharLine < nCharsPerLine) {
+  while (iCharOriginal < original.length || iCharLine < nCharsPerLine) {
     if (iCharLine == nCharsPerLine) {
       out.addAll(rowOriginal);
       out.addAll(rowQuery);
@@ -50,10 +50,17 @@ List<Container> interleaveOriginalAndQuery(
       }
     }
 
-    if (iCharOriginal >= originalContainers.length ||
-        lineBreakIndices.isNotEmpty && lineBreakIndices[iCharOriginal]) {
+    if (iCharOriginal >= original.length || fillUpNextTime) {
       fillUp = true;
-      iCharOriginal++;
+      fillUpNextTime = false;
+    } else if (lineBreakIndices.isNotEmpty && lineBreakIndices[iCharOriginal]) {
+      if (query[iCharOriginal].child?.child?.data ==
+          Strings.alignmentPlaceholder) {
+        fillUp = true;
+        iCharOriginal++;
+      } else {
+        fillUpNextTime = true;
+      }
     }
 
     if (fillUp) {
@@ -62,8 +69,8 @@ List<Container> interleaveOriginalAndQuery(
         rowQuery.add(Container());
       }
     } else {
-      rowOriginal.add(originalContainers[iCharOriginal]);
-      rowQuery.add(queryContainers[iCharOriginal]);
+      rowOriginal.add(original[iCharOriginal]);
+      rowQuery.add(query[iCharOriginal]);
       iCharOriginal++;
       lastLineWasSpacing = false;
     }
