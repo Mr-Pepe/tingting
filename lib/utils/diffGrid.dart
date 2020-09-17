@@ -61,4 +61,6 @@ class DiffGrid {
   List<Container> asList() {
     return _gridAsList;
   }
+
+  int get nLines => _lineMismatchIndices.length;
 }
