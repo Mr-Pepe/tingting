@@ -1,6 +1,6 @@
 import 'package:tingting/values/enumsAndConstants.dart';
 
-List<bool> getMismatchIndices(
+List<bool> getCharacterMismatchIndices(
   List<String> original,
   List<String> query, {
   bool countPunctuationErrors = true,
