@@ -13,6 +13,7 @@ class Aligner {
   final int matchScore;
   final int mismatchScore;
   final int gapScore;
+  final bool ignoreCase;
   GlobalAlignment _alignment;
   GlobalAlignment get alignment => _alignment;
   List<List<int>> _scoreMatrix;
@@ -27,6 +28,7 @@ class Aligner {
   Aligner({
     @required String original,
     @required String query,
+    this.ignoreCase = false,
     this.placeholder = '-',
     this.matchScore = 1,
     this.mismatchScore = -1,
@@ -139,6 +141,11 @@ class Aligner {
   }
 
   calculateScores() {
+    final original =
+        ignoreCase ? _original.map((e) => e.toLowerCase()).toList() : _original;
+    final query =
+        ignoreCase ? _query.map((e) => e.toLowerCase()).toList() : _query;
+
     for (var i = 1; i < _scoreMatrix.length; i++) {
       for (var j = 1; j < _scoreMatrix[0].length; j++) {
         // The order of entries is important, because only the first candidate
@@ -152,7 +159,7 @@ class Aligner {
         ];
 
         int match =
-            (_query[i - 1] == _original[j - 1]) ? matchScore : mismatchScore;
+            (query[i - 1] == original[j - 1]) ? matchScore : mismatchScore;
 
         final possibleScores = [
           _scoreMatrix[i - 1][j] + gapScore,

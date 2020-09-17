@@ -86,5 +86,6 @@ Future<GlobalAlignment> align(List<String> input) {
     original: input[0],
     query: input[1],
     placeholder: Strings.alignmentPlaceholder,
+    ignoreCase: true,
   ).alignment);
 }

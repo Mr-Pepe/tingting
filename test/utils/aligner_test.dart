@@ -83,4 +83,16 @@ void main() {
     expect(aligner.backtraceMatrix[0][2], equals([0, 1]));
     expect(aligner.backtraceMatrix[1][0], equals([0, 0]));
   });
+
+  test('Case can optionally be ignored', () {
+    final original = "aabc";
+    final query = "aBc";
+
+    final aligner1 = Aligner(original: original, query: query);
+    final aligner2 =
+        Aligner(original: original, query: query, ignoreCase: true);
+
+    expect(aligner1.alignment.query, equals('aB-c'.split('')));
+    expect(aligner2.alignment.query, equals('a-Bc'.split('')));
+  });
 }
