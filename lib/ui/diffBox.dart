@@ -35,8 +35,6 @@ class DiffBox extends StatelessWidget {
                 );
 
                 final nCharsPerLine = (boxWidth / cellSize).floor().toInt();
-                final nLines =
-                    (alignment.original.length / nCharsPerLine).ceil();
 
                 final diffGrid = DiffGrid(alignment, nCharsPerLine);
 
