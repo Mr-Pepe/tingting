@@ -41,7 +41,10 @@ class TingTingViewModel extends ChangeNotifier {
 
   Future<bool> setAudioFile(String path) async {
     try {
-      player = AudioPlayer();
+      if (player == null) {
+        player = AudioPlayer();
+      }
+      player.stop();
       await player.setUrl(path);
 
       _audioFilePath = path;
