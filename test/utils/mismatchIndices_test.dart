@@ -23,19 +23,4 @@ void main() {
       }
     });
   });
-
-  group('Line mismatch', () {
-    final original = 'abababababc'.split('');
-    final query = 'abacabacabc'.split('');
-    final nCharsPerLine = 2;
-
-    final characterMismatchIndices =
-        getCharacterMismatchIndices(original, query);
-
-    test('Returns a list of booleans being true where a line has a mismatch',
-        () {
-      expect(getLineMismatchIndices(characterMismatchIndices, nCharsPerLine),
-          equals([false, true, false, true, false, false]));
-    });
-  });
 }
