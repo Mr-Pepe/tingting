@@ -24,10 +24,11 @@ getAudio(BuildContext context, TingTingViewModel model, int mode) async {
 
 Future<bool> getAudioFromFile(
     BuildContext context, TingTingViewModel model) async {
-  final audioFile = await FilePicker.getFile();
+  final audioFile = await FilePicker.platform.pickFiles();
 
   if (audioFile != null) {
-    return Future.value(model.setAudioFile(audioFile.path).catchError((e) {
+    return Future.value(
+        model.setAudioFile(audioFile.paths.first).catchError((e) {
       notify(context, Strings.error, e.message);
     }));
   }

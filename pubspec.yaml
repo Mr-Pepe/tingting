@@ -1,5 +1,6 @@
 name: tingting
-description: Automatic comparison of transcripts to originals for listening comprehension practice.
+description: Automatic comparison of transcripts to originals for listening
+  comprehension practice.
 
 version: 1.0.0
 
@@ -14,7 +15,7 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^4.3.1
-  file_picker: ^1.13.0+1
+  file_picker: ^2.0.0
   just_audio: ^0.3.2
   characters: ^1.0.0
   equatable: ^1.2.3
@@ -30,3 +31,4 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
