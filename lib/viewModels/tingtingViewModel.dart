@@ -4,21 +4,22 @@ import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/aligner.dart';
 import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/utils/saveState.dart';
+import 'package:tingting/values/enumsAndConstants.dart';
 import 'package:tingting/values/strings.dart';
 
 class TingTingViewModel extends ChangeNotifier {
   TingTingViewModel(this._saveState) {
     _original = _saveState.original;
     _selfWritten = _saveState.selfWritten;
-    if (_saveState.audioPath != '') {
-      setAudioFile(_saveState.audioPath);
+    if (_saveState.audioPath != '' && _saveState.audioMode != -1) {
+      setAudio(_saveState.audioPath, _saveState.audioMode);
     }
   }
 
   final SaveState _saveState;
 
-  String _audioFilePath;
-  get audioFilePath => _audioFilePath;
+  String _audioPath;
+  get audioFilePath => _audioPath;
 
   Duration _playerPosition;
   Duration get playerPosition => _playerPosition;
@@ -39,23 +40,27 @@ class TingTingViewModel extends ChangeNotifier {
   Future<GlobalAlignment> alignment;
   Future<bool> gettingAudio;
 
-  Future<bool> setAudioFile(String path) async {
+  Future<bool> setAudio(String path, int mode) async {
     try {
       if (player == null) {
         player = AudioPlayer();
       }
       player.stop();
-      await player.setFilePath(path);
+      if (mode == AudioGenerationMode.fromWeb) {
+        await player.setUrl(path);
+      } else {
+        await player.setFilePath(path);
+      }
 
-      _audioFilePath = path;
-      _saveState.setAudioPath(path);
+      _audioPath = path;
+      _saveState.setAudioPath(path, mode);
 
       notifyListeners();
       return true;
     } catch (e) {
       player = null;
       throw Exception(
-          "Could not load $path.\n\nDid you try loading a file with '?' or '#' in its name? Does the file still exist?");
+          "Could not load $path.");
     }
   }
 

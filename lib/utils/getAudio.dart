@@ -11,6 +11,9 @@ import 'package:tingting/viewModels/tingtingViewModel.dart';
 
 getAudio(BuildContext context, TingTingViewModel model, int mode) async {
   switch (mode) {
+    case AudioGenerationMode.fromWeb:
+      model.gettingAudio = getAudioFromWeb(context, model);
+      break;
     case AudioGenerationMode.fromFile:
       model.gettingAudio = getAudioFromFile(context, model);
       break;
@@ -22,13 +25,53 @@ getAudio(BuildContext context, TingTingViewModel model, int mode) async {
   }
 }
 
+Future<bool> getAudioFromWeb(
+    BuildContext context, TingTingViewModel model) async {
+  String url = '';
+  await showDialog<String>(
+      context: context,
+      child: AlertDialog(
+        title: Text(Strings.url),
+        content: TextField(
+          onChanged: (value) => url = value,
+          decoration: InputDecoration(hintText: Strings.exampleUrl),
+        ),
+        actions: [
+          FlatButton(
+            child: Text(Strings.cancel),
+            onPressed: () {
+              url = '';
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text(Strings.ok),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+      barrierDismissible: false);
+
+  if (url.isNotEmpty) {
+    return Future.value(
+        model.setAudio(url, AudioGenerationMode.fromWeb).catchError((e) {
+      notify(context, Strings.error, e.message);
+    }));
+  }
+
+  return true;
+}
+
 Future<bool> getAudioFromFile(
     BuildContext context, TingTingViewModel model) async {
   final audioFile = await FilePicker.platform.pickFiles();
 
   if (audioFile != null) {
-    return Future.value(
-        model.setAudioFile(audioFile.paths.first).catchError((e) {
+    return Future.value(model
+        .setAudio(audioFile.paths.first, AudioGenerationMode.fromFile)
+        .catchError((e) {
       notify(context, Strings.error, e.message);
     }));
   }
@@ -53,7 +96,9 @@ Future<bool> getAudioFromText(
     bool success = false;
 
     while (timer.elapsedMilliseconds < 10000 && !success) {
-      await model.setAudioFile(dirPath + '/' + filePath).then((_) {
+      await model
+          .setAudio(dirPath + '/' + filePath, AudioGenerationMode.fromText)
+          .then((_) {
         success = true;
       }).catchError((e) {});
 

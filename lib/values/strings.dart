@@ -8,6 +8,8 @@ class Strings {
   static final fromWeb = "From web";
   static final error = "Error";
   static final close = "Close";
+  static final ok = "OK";
+  static final cancel = "Cancel";
   static final cantTtsBecauseOriginalEmpty =
       "Audio could not be generated from text because the original text field is empty.";
   static final chineseTtsNotAvailable =
@@ -22,4 +24,7 @@ class Strings {
   static final tabOriginal = "Original";
 
   static final alignmentPlaceholder = ' ';
+
+  static final url = "URL";
+  static final exampleUrl = "e.g., https://youtu.be/dQw4w9WgXcQ";
 }
