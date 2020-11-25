@@ -59,8 +59,7 @@ class TingTingViewModel extends ChangeNotifier {
       return true;
     } catch (e) {
       player = null;
-      throw Exception(
-          "Could not load $path.");
+      throw Exception("Could not load $path.");
     }
   }
 
