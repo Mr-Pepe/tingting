@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/diffTab.dart';
@@ -119,13 +120,19 @@ class _TingTingState extends State<TingTing>
       itemBuilder: (BuildContext context) {
         return [
           PopupMenuItem(
-            value: AudioGenerationMode.fromFile,
-            child: Text(Strings.fromFile),
+            value: AudioGenerationMode.fromWeb,
+            child: Text(Strings.fromWeb),
           ),
-          PopupMenuItem(
-            value: AudioGenerationMode.fromText,
-            child: Text(Strings.fromText),
-          ),
+          if (!kIsWeb)
+            PopupMenuItem(
+              value: AudioGenerationMode.fromFile,
+              child: Text(Strings.fromFile),
+            ),
+          if (!kIsWeb)
+            PopupMenuItem(
+              value: AudioGenerationMode.fromText,
+              child: Text(Strings.fromText),
+            ),
         ];
       },
     );
