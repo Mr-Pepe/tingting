@@ -8,12 +8,14 @@ class MyAudioSource extends StreamAudioSource {
   MyAudioSource(this._buffer) : super("Bla");
 
   @override
-  Stream<List<int>> read([int start, int end]) {
-    return Stream.value(_buffer.skip(start).take(end - start));
-  }
-
-  @override
-  int get lengthInBytes {
-    return _buffer.length;
+  Future<StreamAudioResponse> request([int start, int end]) {
+    return Future.value(
+      StreamAudioResponse(
+        sourceLength: _buffer.length,
+        contentLength: end - start,
+        offset: 0,
+        stream: Stream.value(_buffer.skip(start).take(end-start)),
+      ),
+    );
   }
 }
