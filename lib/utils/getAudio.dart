@@ -76,9 +76,10 @@ Future<bool> getAudioFromFile(
           .catchError((e) {
         notify(context, Strings.error, e.message);
       }));
-    }else {
+    } else {
       return Future.value(model
-          .setAudio('', audioFile.files.first.bytes, AudioGenerationMode.fromBuffer)
+          .setAudio(
+              '', audioFile.files.first.bytes, AudioGenerationMode.fromBuffer)
           .catchError((e) {
         notify(context, Strings.error, e.message);
       }));
@@ -106,7 +107,8 @@ Future<bool> getAudioFromText(
 
     while (timer.elapsedMilliseconds < 10000 && !success) {
       await model
-          .setAudio(dirPath + '/' + filePath, null, AudioGenerationMode.fromText)
+          .setAudio(
+              dirPath + '/' + filePath, null, AudioGenerationMode.fromText)
           .then((_) {
         success = true;
       }).catchError((e) {});
