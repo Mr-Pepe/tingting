@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/aligner.dart';
@@ -45,7 +44,7 @@ class TingTingViewModel extends ChangeNotifier {
   Future<bool> gettingAudio;
 
   Future<bool> setAudio(String path, Uint8List buffer, int mode) async {
-    // try {
+    try {
       if (player == null) {
         player = AudioPlayer();
       }
@@ -56,7 +55,7 @@ class TingTingViewModel extends ChangeNotifier {
         if (mode == AudioGenerationMode.fromFile) {
           await player.setFilePath(path);
         } else if (mode == AudioGenerationMode.fromBuffer) {
-          await player.setAudioSource(MyAudioSource(buffer));
+          await player.setAudioSource(BufferAudioSource(buffer));
         }
       }
 
@@ -65,10 +64,10 @@ class TingTingViewModel extends ChangeNotifier {
 
       notifyListeners();
       return true;
-    // } catch (e) {
-    //   player = null;
-    //   throw Exception("Could not load $path.");
-    // }
+    } catch (e) {
+      player = null;
+      throw Exception("Could not load $path.");
+    }
   }
 
   getDiff() async {
