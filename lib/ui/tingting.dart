@@ -123,11 +123,11 @@ class _TingTingState extends State<TingTing>
             value: AudioGenerationMode.fromWeb,
             child: Text(Strings.fromWeb),
           ),
-          if (!kIsWeb)
-            PopupMenuItem(
-              value: AudioGenerationMode.fromFile,
-              child: Text(Strings.fromFile),
-            ),
+          // if (!kIsWeb)
+          PopupMenuItem(
+            value: AudioGenerationMode.fromFile,
+            child: Text(Strings.fromFile),
+          ),
           if (!kIsWeb)
             PopupMenuItem(
               value: AudioGenerationMode.fromText,

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart';
@@ -56,7 +57,7 @@ Future<bool> getAudioFromWeb(
 
   if (url.isNotEmpty) {
     return Future.value(
-        model.setAudio(url, AudioGenerationMode.fromWeb).catchError((e) {
+        model.setAudio(url, null, AudioGenerationMode.fromWeb).catchError((e) {
       notify(context, Strings.error, e.message);
     }));
   }
@@ -69,11 +70,20 @@ Future<bool> getAudioFromFile(
   final audioFile = await FilePicker.platform.pickFiles();
 
   if (audioFile != null) {
-    return Future.value(model
-        .setAudio(audioFile.paths.first, AudioGenerationMode.fromFile)
-        .catchError((e) {
-      notify(context, Strings.error, e.message);
-    }));
+    if (!kIsWeb) {
+      return Future.value(model
+          .setAudio(audioFile.paths.first, null, AudioGenerationMode.fromFile)
+          .catchError((e) {
+        notify(context, Strings.error, e.message);
+      }));
+    } else {
+      return Future.value(model
+          .setAudio(
+              '', audioFile.files.first.bytes, AudioGenerationMode.fromBuffer)
+          .catchError((e) {
+        notify(context, Strings.error, e.message);
+      }));
+    }
   }
 
   return true;
@@ -97,7 +107,8 @@ Future<bool> getAudioFromText(
 
     while (timer.elapsedMilliseconds < 10000 && !success) {
       await model
-          .setAudio(dirPath + '/' + filePath, AudioGenerationMode.fromText)
+          .setAudio(
+              dirPath + '/' + filePath, null, AudioGenerationMode.fromText)
           .then((_) {
         success = true;
       }).catchError((e) {});

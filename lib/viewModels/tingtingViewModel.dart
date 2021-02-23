@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:tingting/utils/aligner.dart';
+import 'package:tingting/utils/audioSource.dart';
 import 'package:tingting/utils/globalAlignment.dart';
 import 'package:tingting/utils/saveState.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
@@ -12,7 +15,7 @@ class TingTingViewModel extends ChangeNotifier {
     _original = _saveState.original;
     _selfWritten = _saveState.selfWritten;
     if (_saveState.audioPath != '' && _saveState.audioMode != -1) {
-      setAudio(_saveState.audioPath, _saveState.audioMode);
+      setAudio(_saveState.audioPath, null, _saveState.audioMode);
     }
   }
 
@@ -40,7 +43,7 @@ class TingTingViewModel extends ChangeNotifier {
   Future<GlobalAlignment> alignment;
   Future<bool> gettingAudio;
 
-  Future<bool> setAudio(String path, int mode) async {
+  Future<bool> setAudio(String path, Uint8List buffer, int mode) async {
     try {
       if (player == null) {
         player = AudioPlayer();
@@ -49,7 +52,11 @@ class TingTingViewModel extends ChangeNotifier {
       if (mode == AudioGenerationMode.fromWeb) {
         await player.setUrl(path);
       } else {
-        await player.setFilePath(path);
+        if (mode == AudioGenerationMode.fromFile) {
+          await player.setFilePath(path);
+        } else if (mode == AudioGenerationMode.fromBuffer) {
+          await player.setAudioSource(BufferAudioSource(buffer));
+        }
       }
 
       _audioPath = path;
