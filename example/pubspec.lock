@@ -14,7 +14,7 @@ packages:
       name: audio_session
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.10"
+    version: "0.0.11"
   boolean_selector:
     dependency: transitive
     description:
@@ -152,24 +152,24 @@ packages:
   just_audio:
     dependency: transitive
     description:
-      path: "/home/felipe/Projects/just_audio/just_audio"
-      relative: false
-    source: path
-    version: "0.6.5"
+      name: just_audio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.13"
   just_audio_platform_interface:
     dependency: transitive
     description:
       name: just_audio_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   just_audio_web:
     dependency: transitive
     description:
       name: just_audio_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1"
+    version: "0.2.3"
   matcher:
     dependency: transitive
     description:
@@ -260,7 +260,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.24.1"
+    version: "0.25.0"
   shared_preferences:
     dependency: transitive
     description:
