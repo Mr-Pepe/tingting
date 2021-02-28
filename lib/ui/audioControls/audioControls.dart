@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/audioControls/seekBar.dart';
+import 'package:tingting/utils/audio.dart';
 import 'package:tingting/utils/utils.dart';
 import 'package:tingting/values/dimensions.dart';
 
@@ -81,11 +82,9 @@ class AudioControls extends StatelessWidget {
                           },
                         ),
                         IconButton(
-                          key: playPauseButtonKey,
                           iconSize: playButtonSize,
                           icon: _getCenterButtonIcon(processingState, playing),
-                          onPressed: () => _centerButtonCallback(
-                              processingState, playing, player),
+                          onPressed: () => togglePlayPause(player),
                         ),
                         IconButton(
                           iconSize: otherButtonsSize,
@@ -141,17 +140,6 @@ class AudioControls extends StatelessWidget {
     } else {
       return playArrow;
     }
-  }
-}
-
-_centerButtonCallback(
-    ProcessingState processingState, bool playing, AudioPlayer player) {
-  if (playing != true) {
-    player.play();
-  } else if (processingState != ProcessingState.completed) {
-    player.pause();
-  } else {
-    player.seek(Duration.zero);
   }
 }
 
