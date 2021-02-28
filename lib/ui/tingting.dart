@@ -110,6 +110,7 @@ class _TingTingState extends State<TingTing>
 
   PopupMenuButton _popupMenu() {
     return PopupMenuButton(
+      key: Key('loadAudioButton'),
       icon: Icon(Icons.music_note),
       onSelected: (mode) {
         setState(() {
@@ -120,16 +121,18 @@ class _TingTingState extends State<TingTing>
       itemBuilder: (BuildContext context) {
         return [
           PopupMenuItem(
+            key: Key('loadAudioFromWebItem'),
             value: AudioGenerationMode.fromWeb,
             child: Text(Strings.fromWeb),
           ),
-          // if (!kIsWeb)
           PopupMenuItem(
+            key: Key('loadAudioFromFileItem'),
             value: AudioGenerationMode.fromFile,
             child: Text(Strings.fromFile),
           ),
           if (!kIsWeb)
             PopupMenuItem(
+              key: Key('loadAudioFromTextItem'),
               value: AudioGenerationMode.fromText,
               child: Text(Strings.fromText),
             ),

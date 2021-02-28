@@ -44,7 +44,7 @@ class AudioControls extends StatelessWidget {
                 final processingState = playerState?.processingState;
 
                 if (playerState != null) {
-                  return Column(children: <Widget>[
+                  return Column(key: Key('audioControls'), children: <Widget>[
                     SeekBar(
                       duration: duration,
                       position: position,
@@ -81,6 +81,7 @@ class AudioControls extends StatelessWidget {
                           },
                         ),
                         IconButton(
+                          key: playPauseButtonKey,
                           iconSize: playButtonSize,
                           icon: _getCenterButtonIcon(processingState, playing),
                           onPressed: () => _centerButtonCallback(
