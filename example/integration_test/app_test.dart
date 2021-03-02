@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:tingting/ui/audioControls/seekBar.dart';
@@ -28,8 +30,7 @@ void main() {
     expect(fromFile, findsOneWidget);
   });
 
-  testWidgets("Audio controls show after loading audio from web",
-      (WidgetTester tester) async {
+  testWidgets("Test audio controls and shortcuts", (WidgetTester tester) async {
     app.main();
     await tester.pumpAndSettle();
 
@@ -77,13 +78,44 @@ void main() {
     expect(backwardButton, findsOneWidget);
     expect(seekBar, findsOneWidget);
 
-    SeekBar seekBarWidget = tester.widget(seekBar);
-    expect(seekBarWidget.position.inMilliseconds.toDouble(), equals(0));
+    double sliderPosition = _getSliderPosition(tester);
+    expect(sliderPosition, equals(0));
+
+    await tester.tap(playButton);
+    await tester.pump(Duration(milliseconds: 1000));
+
+    // Check that audio has played
+    sliderPosition = _getSliderPosition(tester);
+    expect(sliderPosition, greaterThan(0));
 
     await tester.tap(playButton);
     await tester.pump(Duration(milliseconds: 500));
 
-    seekBarWidget = tester.widget(seekBar);
-    expect(seekBarWidget.position.inMilliseconds.toDouble(), greaterThan(0));
+    // Check that audio has paused
+    expect(_getSliderPosition(tester) - sliderPosition, lessThan(200));
+    sliderPosition = _getSliderPosition(tester);
+
+    // Test play/pause shortcut
+    await tester.tap(find.byKey(Key('inputTab')));
+    await tester.pumpAndSettle();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.alt);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyK);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.alt);
+    await tester.pump(Duration(milliseconds: 1000));
+    expect(_getSliderPosition(tester) - sliderPosition, greaterThan(100));
+    sliderPosition = _getSliderPosition(tester);
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.alt);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyK);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.alt);
+    await tester.pump(Duration(milliseconds: 500));
+    expect(_getSliderPosition(tester) - sliderPosition, lessThan(300));
+    sliderPosition = _getSliderPosition(tester);
   });
+}
+
+double _getSliderPosition(WidgetTester tester) {
+  return (tester.widget(find.byType(SeekBar)) as SeekBar)
+      .position
+      .inMilliseconds
+      .toDouble();
 }

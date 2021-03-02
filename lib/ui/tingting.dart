@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/diffTab.dart';
 import 'package:tingting/ui/inputTab.dart';
 import 'package:tingting/ui/originalTab.dart';
 import 'package:tingting/ui/audioControls/audioControls.dart';
 import 'package:tingting/ui/utils/loadingIndicator.dart';
-import 'package:tingting/utils/getAudio.dart';
+import 'package:tingting/utils/audio.dart';
+import 'package:tingting/utils/intents.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
 import 'package:tingting/values/strings.dart';
@@ -75,29 +77,43 @@ class _TingTingState extends State<TingTing>
   Widget build(BuildContext context) {
     model = Provider.of<TingTingViewModel>(context);
 
-    return Column(
-      children: <Widget>[
-        AppBar(
-          title: Text(widget.title),
-          actions: [_popupMenu()],
-        ),
-        Expanded(
-          child: FutureBuilder(
-            future: model.gettingAudio,
-            builder: (context, snapshot) {
-              Widget widget;
-              if (snapshot.connectionState == ConnectionState.done ||
-                  snapshot.connectionState == ConnectionState.none) {
-                widget = _tingtingContent();
-              } else {
-                widget = _loadingIndicator();
-              }
+    return FocusableActionDetector(
+      shortcuts: <LogicalKeySet, Intent>{
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.keyK):
+            const PlayPauseIntent(),
+      },
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          PlayPauseIntent: CallbackAction<PlayPauseIntent>(
+              onInvoke: (PlayPauseIntent intent) {
+            return togglePlayPause(model.player);
+          })
+        },
+        child: Column(
+          children: <Widget>[
+            AppBar(
+              title: Text(widget.title),
+              actions: [_popupMenu()],
+            ),
+            Expanded(
+              child: FutureBuilder(
+                future: model.gettingAudio,
+                builder: (context, snapshot) {
+                  Widget widget;
+                  if (snapshot.connectionState == ConnectionState.done ||
+                      snapshot.connectionState == ConnectionState.none) {
+                    widget = _tingtingContent();
+                  } else {
+                    widget = _loadingIndicator();
+                  }
 
-              return widget;
-            },
-          ),
+                  return widget;
+                },
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
