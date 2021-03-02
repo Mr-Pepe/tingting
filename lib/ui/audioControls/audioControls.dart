@@ -72,6 +72,7 @@ class AudioControls extends StatelessWidget {
                           },
                         ),
                         IconButton(
+                          key: Key('audioBackwardButton'),
                           iconSize: otherButtonsSize,
                           icon: replay5Icon,
                           onPressed: () {
@@ -82,11 +83,13 @@ class AudioControls extends StatelessWidget {
                           },
                         ),
                         IconButton(
+                          key: Key('playPauseButton'),
                           iconSize: playButtonSize,
                           icon: _getCenterButtonIcon(processingState, playing),
                           onPressed: () => togglePlayPause(player),
                         ),
                         IconButton(
+                          key: Key('audioForwardButton'),
                           iconSize: otherButtonsSize,
                           icon: Icon(Icons.forward_5),
                           onPressed: () {
