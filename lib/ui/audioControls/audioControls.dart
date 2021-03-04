@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/audioControls/seekBar.dart';
-import 'package:tingting/utils/utils.dart';
+import 'package:tingting/utils/audio.dart';
 import 'package:tingting/values/dimensions.dart';
 
 class AudioControls extends StatelessWidget {
@@ -44,7 +44,7 @@ class AudioControls extends StatelessWidget {
                 final processingState = playerState?.processingState;
 
                 if (playerState != null) {
-                  return Column(children: <Widget>[
+                  return Column(key: Key('audioControls'), children: <Widget>[
                     SeekBar(
                       duration: duration,
                       position: position,
@@ -71,29 +71,25 @@ class AudioControls extends StatelessWidget {
                           },
                         ),
                         IconButton(
+                          key: Key('audioBackwardButton'),
                           iconSize: otherButtonsSize,
                           icon: replay5Icon,
                           onPressed: () {
-                            player.seek(clampDuration(
-                                position - Duration(seconds: 5),
-                                Duration.zero,
-                                duration));
+                            seekRelative(player, -5);
                           },
                         ),
                         IconButton(
+                          key: Key('playPauseButton'),
                           iconSize: playButtonSize,
                           icon: _getCenterButtonIcon(processingState, playing),
-                          onPressed: () => _centerButtonCallback(
-                              processingState, playing, player),
+                          onPressed: () => togglePlayPause(player),
                         ),
                         IconButton(
+                          key: Key('audioForwardButton'),
                           iconSize: otherButtonsSize,
                           icon: Icon(Icons.forward_5),
                           onPressed: () {
-                            player.seek(clampDuration(
-                                position + Duration(seconds: 5),
-                                Duration.zero,
-                                duration));
+                            seekRelative(player, 5);
                           },
                         ),
                         StreamBuilder<double>(
@@ -140,17 +136,6 @@ class AudioControls extends StatelessWidget {
     } else {
       return playArrow;
     }
-  }
-}
-
-_centerButtonCallback(
-    ProcessingState processingState, bool playing, AudioPlayer player) {
-  if (playing != true) {
-    player.play();
-  } else if (processingState != ProcessingState.completed) {
-    player.pause();
-  } else {
-    player.seek(Duration.zero);
   }
 }
 

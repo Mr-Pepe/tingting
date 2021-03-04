@@ -4,8 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tingting/ui/utils/notify.dart';
+import 'package:tingting/utils/utils.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
 import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
@@ -31,28 +33,31 @@ Future<bool> getAudioFromWeb(
   String url = '';
   await showDialog<String>(
       context: context,
-      child: AlertDialog(
-        title: Text(Strings.url),
-        content: TextField(
-          onChanged: (value) => url = value,
-          decoration: InputDecoration(hintText: Strings.exampleUrl),
-        ),
-        actions: [
-          FlatButton(
-            child: Text(Strings.cancel),
-            onPressed: () {
-              url = '';
-              Navigator.of(context).pop();
-            },
+      builder: (BuildContext context) => AlertDialog(
+            title: Text(Strings.url),
+            content: TextField(
+              key: Key('loadAudioFromWebUrlField'),
+              onChanged: (value) => url = value,
+              decoration: InputDecoration(hintText: Strings.exampleUrl),
+            ),
+            actions: [
+              TextButton(
+                key: Key('loadAudioFromWebCancelButton'),
+                child: Text(Strings.cancel),
+                onPressed: () {
+                  url = '';
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                key: Key('loadAudioFromWebOkButton'),
+                child: Text(Strings.ok),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
           ),
-          FlatButton(
-            child: Text(Strings.ok),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
       barrierDismissible: false);
 
   if (url.isNotEmpty) {
@@ -142,4 +147,24 @@ Future<bool> generateSpeechFromText(
   }
 
   return true;
+}
+
+togglePlayPause(AudioPlayer player) {
+  if (player?.playerState?.processingState != null) {
+    if (player.playing != true) {
+      player.play();
+    } else if (player.playerState.processingState !=
+        ProcessingState.completed) {
+      player.pause();
+    } else {
+      player.seek(Duration.zero);
+    }
+  }
+}
+
+seekRelative(AudioPlayer player, int seconds) {
+  player?.seek(
+    clampDuration(player.position + Duration(seconds: seconds), Duration.zero,
+        player.duration),
+  );
 }

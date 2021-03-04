@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/diffTab.dart';
 import 'package:tingting/ui/inputTab.dart';
 import 'package:tingting/ui/originalTab.dart';
 import 'package:tingting/ui/audioControls/audioControls.dart';
 import 'package:tingting/ui/utils/loadingIndicator.dart';
-import 'package:tingting/utils/getAudio.dart';
+import 'package:tingting/utils/audio.dart';
+import 'package:tingting/utils/intents.dart';
 import 'package:tingting/values/dimensions.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
 import 'package:tingting/values/strings.dart';
@@ -75,29 +77,55 @@ class _TingTingState extends State<TingTing>
   Widget build(BuildContext context) {
     model = Provider.of<TingTingViewModel>(context);
 
-    return Column(
-      children: <Widget>[
-        AppBar(
-          title: Text(widget.title),
-          actions: [_popupMenu()],
-        ),
-        Expanded(
-          child: FutureBuilder(
-            future: model.gettingAudio,
-            builder: (context, snapshot) {
-              Widget widget;
-              if (snapshot.connectionState == ConnectionState.done ||
-                  snapshot.connectionState == ConnectionState.none) {
-                widget = _tingtingContent();
-              } else {
-                widget = _loadingIndicator();
-              }
+    return FocusableActionDetector(
+      shortcuts: <LogicalKeySet, Intent>{
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.keyK):
+            const PlayPauseIntent(),
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.keyJ):
+            const SkipBackwardIntent(),
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.keyL):
+            const SkipForwardIntent(),
+      },
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          PlayPauseIntent: CallbackAction<PlayPauseIntent>(
+              onInvoke: (PlayPauseIntent intent) {
+            return togglePlayPause(model.player);
+          }),
+          SkipBackwardIntent: CallbackAction<SkipBackwardIntent>(
+              onInvoke: (SkipBackwardIntent intent) {
+            return seekRelative(model.player, -5);
+          }),
+          SkipForwardIntent: CallbackAction<SkipForwardIntent>(
+              onInvoke: (SkipForwardIntent intent) {
+            return seekRelative(model.player, 5);
+          }),
+        },
+        child: Column(
+          children: <Widget>[
+            AppBar(
+              title: Text(widget.title),
+              actions: [_popupMenu()],
+            ),
+            Expanded(
+              child: FutureBuilder(
+                future: model.gettingAudio,
+                builder: (context, snapshot) {
+                  Widget widget;
+                  if (snapshot.connectionState == ConnectionState.done ||
+                      snapshot.connectionState == ConnectionState.none) {
+                    widget = _tingtingContent();
+                  } else {
+                    widget = _loadingIndicator();
+                  }
 
-              return widget;
-            },
-          ),
+                  return widget;
+                },
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -110,6 +138,7 @@ class _TingTingState extends State<TingTing>
 
   PopupMenuButton _popupMenu() {
     return PopupMenuButton(
+      key: Key('loadAudioButton'),
       icon: Icon(Icons.music_note),
       onSelected: (mode) {
         setState(() {
@@ -120,16 +149,18 @@ class _TingTingState extends State<TingTing>
       itemBuilder: (BuildContext context) {
         return [
           PopupMenuItem(
+            key: Key('loadAudioFromWebItem'),
             value: AudioGenerationMode.fromWeb,
             child: Text(Strings.fromWeb),
           ),
-          // if (!kIsWeb)
           PopupMenuItem(
+            key: Key('loadAudioFromFileItem'),
             value: AudioGenerationMode.fromFile,
             child: Text(Strings.fromFile),
           ),
           if (!kIsWeb)
             PopupMenuItem(
+              key: Key('loadAudioFromTextItem'),
               value: AudioGenerationMode.fromText,
               child: Text(Strings.fromText),
             ),
