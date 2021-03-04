@@ -3,7 +3,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:tingting/ui/audioControls/seekBar.dart';
 import 'package:tingting/utils/audio.dart';
-import 'package:tingting/utils/utils.dart';
 import 'package:tingting/values/dimensions.dart';
 
 class AudioControls extends StatelessWidget {
