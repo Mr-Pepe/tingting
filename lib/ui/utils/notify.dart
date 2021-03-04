@@ -9,7 +9,7 @@ notify(BuildContext context, String heading, String body) {
         title: Text(heading),
         content: Text(body),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },

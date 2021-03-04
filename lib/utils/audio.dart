@@ -41,7 +41,7 @@ Future<bool> getAudioFromWeb(
               decoration: InputDecoration(hintText: Strings.exampleUrl),
             ),
             actions: [
-              FlatButton(
+              TextButton(
                 key: Key('loadAudioFromWebCancelButton'),
                 child: Text(Strings.cancel),
                 onPressed: () {
@@ -49,7 +49,7 @@ Future<bool> getAudioFromWeb(
                   Navigator.of(context).pop();
                 },
               ),
-              FlatButton(
+              TextButton(
                 key: Key('loadAudioFromWebOkButton'),
                 child: Text(Strings.ok),
                 onPressed: () {
