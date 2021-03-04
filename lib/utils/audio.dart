@@ -7,6 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tingting/ui/utils/notify.dart';
+import 'package:tingting/utils/utils.dart';
 import 'package:tingting/values/enumsAndConstants.dart';
 import 'package:tingting/values/strings.dart';
 import 'package:tingting/viewModels/tingtingViewModel.dart';
@@ -159,4 +160,11 @@ togglePlayPause(AudioPlayer player) {
       player.seek(Duration.zero);
     }
   }
+}
+
+seekRelative(AudioPlayer player, int seconds) {
+  player?.seek(
+    clampDuration(player.position + Duration(seconds: seconds), Duration.zero,
+        player.duration),
+  );
 }

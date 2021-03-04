@@ -76,10 +76,7 @@ class AudioControls extends StatelessWidget {
                           iconSize: otherButtonsSize,
                           icon: replay5Icon,
                           onPressed: () {
-                            player.seek(clampDuration(
-                                position - Duration(seconds: 5),
-                                Duration.zero,
-                                duration));
+                            seekRelative(player, -5);
                           },
                         ),
                         IconButton(
@@ -93,10 +90,7 @@ class AudioControls extends StatelessWidget {
                           iconSize: otherButtonsSize,
                           icon: Icon(Icons.forward_5),
                           onPressed: () {
-                            player.seek(clampDuration(
-                                position + Duration(seconds: 5),
-                                Duration.zero,
-                                duration));
+                            seekRelative(player, 5);
                           },
                         ),
                         StreamBuilder<double>(

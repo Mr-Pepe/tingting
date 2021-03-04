@@ -81,13 +81,25 @@ class _TingTingState extends State<TingTing>
       shortcuts: <LogicalKeySet, Intent>{
         LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.keyK):
             const PlayPauseIntent(),
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.keyJ):
+            const SkipBackwardIntent(),
+        LogicalKeySet(LogicalKeyboardKey.alt, LogicalKeyboardKey.keyL):
+            const SkipForwardIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
           PlayPauseIntent: CallbackAction<PlayPauseIntent>(
               onInvoke: (PlayPauseIntent intent) {
             return togglePlayPause(model.player);
-          })
+          }),
+          SkipBackwardIntent: CallbackAction<SkipBackwardIntent>(
+              onInvoke: (SkipBackwardIntent intent) {
+            return seekRelative(model.player, -5);
+          }),
+          SkipForwardIntent: CallbackAction<SkipForwardIntent>(
+              onInvoke: (SkipForwardIntent intent) {
+            return seekRelative(model.player, 5);
+          }),
         },
         child: Column(
           children: <Widget>[
