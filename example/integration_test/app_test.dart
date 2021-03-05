@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -29,7 +28,6 @@ void main() {
     expect(fromWeb, findsOneWidget);
     expect(fromFile, findsOneWidget);
   });
-
   testWidgets("Test audio controls and shortcuts", (WidgetTester tester) async {
     app.main();
     await tester.pumpAndSettle();
@@ -84,15 +82,12 @@ void main() {
     await tester.tap(playButton);
     await tester.pump(Duration(milliseconds: 1000));
 
-    // Check that audio has played
+    // Check play/pause button
     sliderPosition = _getSliderPosition(tester);
     expect(sliderPosition, greaterThan(0));
-
     await tester.tap(playButton);
     await tester.pump(Duration(milliseconds: 500));
-
-    // Check that audio has paused
-    expect(_getSliderPosition(tester) - sliderPosition, lessThan(200));
+    expect(_getSliderPosition(tester) - sliderPosition, lessThan(300));
     sliderPosition = _getSliderPosition(tester);
 
     // Test play/pause shortcut
@@ -109,6 +104,36 @@ void main() {
     await tester.sendKeyUpEvent(LogicalKeyboardKey.alt);
     await tester.pump(Duration(milliseconds: 500));
     expect(_getSliderPosition(tester) - sliderPosition, lessThan(300));
+    sliderPosition = _getSliderPosition(tester);
+
+    // Check skip forward button
+    await tester.tap(forwardButton);
+    await tester.pump(Duration(milliseconds: 500));
+    expect(_getSliderPosition(tester) - sliderPosition, greaterThan(4000));
+    sliderPosition = _getSliderPosition(tester);
+
+    // Check skip backward button
+    await tester.tap(backwardButton);
+    await tester.pump(Duration(milliseconds: 500));
+    expect(sliderPosition - _getSliderPosition(tester), greaterThan(4000));
+    sliderPosition = _getSliderPosition(tester);
+
+    // Check skip forward shortcut
+    await tester.tap(find.byKey(Key('inputTab')));
+    await tester.pumpAndSettle();
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.alt);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyL);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.alt);
+    await tester.pump(Duration(milliseconds: 500));
+    expect(_getSliderPosition(tester) - sliderPosition, greaterThan(4000));
+    sliderPosition = _getSliderPosition(tester);
+
+    // Check skip backward shortcut
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.alt);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyJ);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.alt);
+    await tester.pump(Duration(milliseconds: 500));
+    expect(sliderPosition - _getSliderPosition(tester), greaterThan(4000));
     sliderPosition = _getSliderPosition(tester);
   });
 }
